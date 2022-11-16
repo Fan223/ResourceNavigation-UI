@@ -1,37 +1,38 @@
 <template>
-  <Row>
-    <Col :span="12">
-    <Button
-      @click="collapsedAside"
-      icon="ios-home-outline"
-      v-if="!this.$store.state.isCollapsed"
-      class="header-collapse-button"
-    >
-    </Button>
-    <Button
-      @click="collapsedAside"
-      icon="ios-home-outline"
-      v-if="this.$store.state.isCollapsed"
-      class="header-collapse-button"
-    >
-    </Button>
-    </Col>
+  <el-row>
+    <el-col :span="4">
+      <el-button
+        @click="collapsedAside"
+        :icon="Fold"
+        v-if="!this.$store.state.isCollapsed"
+        class="header-collapse-button"
+      >
+      </el-button>
+      <el-button
+        @click="collapsedAside"
+        :icon="Expand"
+        v-if="this.$store.state.isCollapsed"
+        class="header-collapse-button"
+      >
+      </el-button>
+    </el-col>
 
-    <Col
+    <el-col
       :span="4"
-      :offset="8"
+      :offset="16"
     >
-    <Avatar
-      :size="40"
-      :src="this.$store.state.url"
-      class="header-avatar"
-    />
-    </Col>
-  </Row>
+      <el-avatar
+        :size="40"
+        :src="this.$store.state.url"
+        class="header-avatar"
+      />
+    </el-col>
+  </el-row>
 </template>
 
 <script>
 import { useStore } from 'vuex'
+import { Fold, Expand } from '@element-plus/icons-vue'
 
 export default {
   name: 'HeaderMenu',
@@ -44,18 +45,23 @@ export default {
 
     return {
       collapsedAside,
+      Fold,
+      Expand
     }
   }
 }
 </script>
 
 <style scoped>
+.el-col {
+  height: 50px;
+}
 .header-collapse-button {
   border: none;
   height: 50px;
-  width: 50px;
-  margin-bottom: 2px;
-  font-size: 25px;
+  width: 45px;
+  margin-bottom: 3px;
+  font-size: 20px;
   border-bottom: 1px solid #ccc;
 }
 .header-collapse-button:hover {

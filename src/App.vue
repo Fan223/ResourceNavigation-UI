@@ -9,4 +9,10 @@ export default {
 </script>
 
 <style>
+/* 去除页面边距 */
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
 </style>

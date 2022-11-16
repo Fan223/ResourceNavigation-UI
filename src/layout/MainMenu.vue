@@ -1,52 +1,48 @@
 <template>
   <!-- 主布局 -->
-  <Layout class="layout">
+  <el-container class="layout">
 
     <!-- 侧边栏和（顶部、主体） -->
-    <Layout>
+    <el-container>
 
       <!-- 侧边栏 -->
-      <Sider
-        hide-trigger
-        collapsible
-        :width="200"
+      <el-aside
+        width="auto"
         :collapsed-width="78"
         v-model="this.$store.state.isCollapsed"
-        class="layout-sider"
       >
-        <SiderMenu />
-      </Sider>
+        <AsideMenu />
+      </el-aside>
 
       <!-- 顶部和主体 -->
-      <Layout>
-        <Header class="layout-header">
+      <el-container>
+        <el-header height="50px">
           <HeaderMenu />
-        </Header>
-        <Content class="layout-content">
+        </el-header>
+        <el-main>
           <router-view> </router-view>
-        </Content>
-      </Layout>
-    </Layout>
+        </el-main>
+      </el-container>
+    </el-container>
 
     <!-- 底部 -->
-    <span class="layout-footer">Copyright © 2022 凡（Fan223）</span>
-    <!-- <Footer class="layout-footer">
+    <el-footer height="30px">
       <FooterMenu />
-    </Footer> -->
-  </Layout>
+    </el-footer>
+  </el-container>
 </template>
 
 <script>
-import SiderMenu from './SiderMenu.vue';
+import AsideMenu from './AsideMenu.vue';
 import HeaderMenu from './HeaderMenu.vue';
-// import FooterMenu from './FooterMenu.vue';
+import FooterMenu from './FooterMenu.vue';
 
 export default {
   name: 'MainMenu',
   components: {
-    SiderMenu,
+    AsideMenu,
     HeaderMenu,
-    // FooterMenu
+    FooterMenu
   },
 }
 </script>
@@ -55,10 +51,10 @@ export default {
 .layout {
   height: 100vh;
 }
-.layout-sider {
+.el-aside {
   background-color: #001529;
 }
-.layout-header {
+.el-header {
   height: 50px;
   line-height: 50px;
   min-height: 50px;
@@ -67,13 +63,12 @@ export default {
   border-bottom: 1px solid #ccc;
   padding: 0;
 }
-.layout-content {
+.el-main {
   min-width: 220px;
   min-height: 400px;
   padding: 0;
 }
-.layout-footer {
-  height: 30px;
+.el-footer {
   line-height: 30px;
   max-height: 30px;
   min-height: 30px;
