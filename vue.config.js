@@ -4,8 +4,8 @@ module.exports = defineConfig({
   devServer: {
     port: 8083,
     proxy: {
-      '/reNav': {
-        target: 'http://localhost:5000',
+      '/resNav': {
+        target: 'http://localhost:8881',
         ws: true,
         changeOrigin: true,
       },

@@ -19,15 +19,17 @@
     </el-sub-menu>
 
     <!-- 没有 children, 就显示为单菜单，没有小箭头 -->
-    <el-menu-item
-      :index="asideMenu.id"
+    <router-link
       v-else
+      :to="asideMenu.path"
     >
-      <el-icon>
-        <Menu />
-      </el-icon>
-      <template #title> {{asideMenu.name}} </template>
-    </el-menu-item>
+      <el-menu-item :index="asideMenu.id">
+        <el-icon>
+          <Menu />
+        </el-icon>
+        <template #title> {{asideMenu.name}} </template>
+      </el-menu-item>
+    </router-link>
   </template>
 </template>
 
@@ -39,4 +41,7 @@ export default {
 </script>
 
 <style>
+a {
+  text-decoration: none;
+}
 </style>
