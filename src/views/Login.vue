@@ -63,6 +63,7 @@
 import { reactive, ref } from "@vue/reactivity";
 import { getCurrentInstance, inject } from "@vue/runtime-core";
 import ViewUIPlus from 'view-ui-plus';
+// import qs from 'qs';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -105,7 +106,35 @@ export default {
           loadingStatus.value = true;
           ViewUIPlus.LoadingBar.start();
 
-          axios.post('/resNav/login', loginForm).then((response) => {
+          axios({
+            method: 'post',
+            url: '/resNav/login',
+            data: {
+              username: loginForm.username,
+              password: loginForm.password,
+              captcha: loginForm.captcha
+            },
+            Headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            transformRequest: [
+              function (data) {
+
+                let ret = ''
+
+                for (let it in data) {
+
+                  ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+
+                }
+
+                ret = ret.substring(0, ret.lastIndexOf('&'));
+
+                return ret
+
+              }
+            ]
+          }).then((response) => {
             loadingStatus.value = false;
             ViewUIPlus.LoadingBar.finish();
 
