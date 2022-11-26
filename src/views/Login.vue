@@ -8,7 +8,7 @@
         :model="loginForm"
         :rules="loginFormRules"
         :hide-required-asterisk="true"
-        :status-icon="true"
+        @keyup.enter="login"
       >
         <h1>登录</h1>
         <el-form-item
@@ -63,7 +63,8 @@
 import { reactive, ref } from "@vue/reactivity";
 import { getCurrentInstance, inject } from "@vue/runtime-core";
 import ViewUIPlus from 'view-ui-plus';
-// import qs from 'qs';
+import { useRouter } from 'vue-router'
+import qs from 'qs';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -72,86 +73,85 @@ export default {
     const axios = inject('axios');
     const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
+    const router = useRouter()
 
     // 登录表单
     let loginForm = reactive({
-      username: '',
-      password: '',
-      captcha: ''
+      username: 'fan',
+      password: 'fan223',
+      captcha: '',
+      loginToken: ''
     });
     let captchaImg = ref('');
     let loadingStatus = ref(false);
 
     // 表单验证规则
     let loginFormRules = {
-      username: [
-        // required 表示是否必填，message 表示提示信息，trigger 表示触发方式
-        { required: true, message: '请输入用户名', trigger: 'blur' },
-      ],
+      username: [{ required: true, message: '请输入用户名', trigger: 'blur' },],
       password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
       captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
     };
 
     function getCaptcha() {
       axios.get('/resNav/api/getCaptcha').then((response) => {
-        captchaImg.value = response.data.data;
+        captchaImg.value = response.data.data.captchaImg;
+        loginForm.loginToken = response.data.data.loginToken
       });
     }
     getCaptcha();
 
     function login() {
-
       proxy.$refs.loginFormRef.validate((valid) => {
         if (valid) {
           loadingStatus.value = true;
           ViewUIPlus.LoadingBar.start();
 
-          axios({
-            method: 'post',
-            url: '/resNav/login',
-            data: {
-              username: loginForm.username,
-              password: loginForm.password,
-              captcha: loginForm.captcha
-            },
-            Headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            transformRequest: [
-              function (data) {
+          // axios({
+          //   method: 'post',
+          //   url: '/resNav/login',
+          //   data: {
+          //     username: loginForm.username,
+          //     password: loginForm.password,
+          //     captcha: loginForm.captcha,
+          //     loginToken: loginForm.loginToken
+          //   },
+          //   Headers: {
+          //     'Content-Type': 'application/x-www-form-urlencoded'
+          //   },
+          //   transformRequest: [
+          //     function (data) {
+          //       let ret = ''
+          //       for (let it in data) {
+          //         ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+          //       }
 
-                let ret = ''
-
-                for (let it in data) {
-
-                  ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-
-                }
-
-                ret = ret.substring(0, ret.lastIndexOf('&'));
-
-                return ret
-
-              }
-            ]
-          }).then((response) => {
+          //       return ret.substring(0, ret.lastIndexOf('&'));
+          //     }
+          //   ]
+          // })
+          axios.post('/resNav/login?' + qs.stringify(loginForm)).then((response) => {
             loadingStatus.value = false;
-            ViewUIPlus.LoadingBar.finish();
 
             if (response.data.code == 200) {
+              ViewUIPlus.LoadingBar.finish();
               ElMessage({
-                message: '登录成功',
+                message: response.data.msg,
                 type: 'success',
               })
-              // localStorage.setItem("userInfo", JSON.stringify(response.data.data));
-              // this.$router.push('/home');
+
+              const JWT = response.headers.authorization
+              localStorage.setItem('JWT', JWT)
+
+              router.push('/home');
             } else {
               ViewUIPlus.LoadingBar.error();
-              getCaptcha();
               ElMessage({
                 message: response.data.msg,
                 type: 'error',
               })
+
+              getCaptcha()
+              loginForm.captcha = ''
             }
           });
         } else {
@@ -171,7 +171,7 @@ export default {
       login,
       loadingStatus,
       resetForm,
-      getCaptcha
+      getCaptcha,
     };
   },
 };
@@ -198,7 +198,7 @@ export default {
 .el-input {
   height: 40px;
 }
-::v-deep .el-form-item__label {
+:v-deep(.el-form-item__label) {
   color: black;
   font-weight: bold;
   font-size: 16px;

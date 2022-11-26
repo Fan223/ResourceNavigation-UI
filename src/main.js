@@ -12,7 +12,7 @@ import { ElMessage } from 'element-plus'
 // 饿了么UI 图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // vue-axios
-import axios from 'axios'
+import request from './axios'
 import VueAxios from 'vue-axios'
 // View Design
 import 'view-ui-plus/dist/styles/viewuiplus.css'
@@ -29,8 +29,8 @@ app.component('LoadingBar', LoadingBar);
 app.use(store)
   .use(router)
   .use(ElementPlus)
-  .use(VueAxios, axios)
+  .use(VueAxios, request)
   .mount('#app')
 
-app.provide('axios', axios)
+app.provide('axios', request)
 app.provide('ElMessage', ElMessage)
