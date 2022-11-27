@@ -27,9 +27,9 @@ export default {
     })
 
     function listMenu() {
-      axios.get('/resNav/menu/pageMenus').then(
+      axios.get('/resNav/listNavMenus').then(
         response => {
-          asideMenus.data = response.data.data.records
+          asideMenus.data = response.data.data
         }
       )
     }
