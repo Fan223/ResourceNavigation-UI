@@ -1,45 +1,38 @@
 <template>
-  <el-menu :collapse="this.$store.state.isCollapsed">
+  <el-menu
+    :collapse="this.$store.state.isCollapsed"
+    active-text-color="#ffd04b"
+    :default-active="this.$store.state.menu.activeTabName"
+  >
+
+    <el-menu-item
+      index="Title"
+      @click="$router.go(0)"
+    >
+      <el-icon>
+        <Menu />
+      </el-icon>
+      <template #title>Root</template>
+    </el-menu-item>
+
     <router-link to="/home">
-      <el-menu-item index="root">
+      <el-menu-item index="Home">
         <el-icon>
           <Menu />
         </el-icon>
-        <template #title>Root</template>
+        <template #title>首页</template>
       </el-menu-item>
     </router-link>
 
-    <ChildMenu :asideMenus="asideMenus.data"></ChildMenu>
+    <ChildMenu :asideMenus="this.$store.state.menu.menus"></ChildMenu>
   </el-menu>
 </template>
 
 <script>
-import { reactive } from '@vue/reactivity'
 import ChildMenu from './ChildMenu';
-import { inject } from '@vue/runtime-core';
 
 export default {
   name: 'AsideMenu',
-  setup() {
-    const axios = inject('axios')
-    let asideMenus = reactive({
-      data: []
-    })
-
-    function listMenu() {
-      axios.get('/resNav/listNavMenus').then(
-        response => {
-          asideMenus.data = response.data.data
-        }
-      )
-    }
-
-    listMenu();
-
-    return {
-      asideMenus,
-    }
-  },
   components: {
     ChildMenu
   }

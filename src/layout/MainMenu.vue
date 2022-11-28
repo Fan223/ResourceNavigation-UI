@@ -20,6 +20,7 @@
           <HeaderMenu />
         </el-header>
         <el-main>
+          <Tabs />
           <router-view> </router-view>
         </el-main>
       </el-container>
@@ -36,13 +37,15 @@
 import AsideMenu from './AsideMenu.vue';
 import HeaderMenu from './HeaderMenu.vue';
 import FooterMenu from './FooterMenu.vue';
+import Tabs from './Tabs.vue';
 
 export default {
   name: 'MainMenu',
   components: {
     AsideMenu,
     HeaderMenu,
-    FooterMenu
+    FooterMenu,
+    Tabs
   },
 }
 </script>

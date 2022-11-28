@@ -1,13 +1,19 @@
 <template>
   <el-tree
-    ref="menuTree"
-    :data="menus.data"
+    ref="menusTree"
+    :data="menusTree.data"
     show-checkbox
     default-expand-all
     node-key="id"
     highlight-current
     :props="defaultProps"
   />
+  <h1>
+    {{ menusTree.data }}
+  </h1>
+  <el-button @click="listMenusTree">
+    11
+  </el-button>
 </template>
 
 <script>
@@ -19,27 +25,30 @@ export default {
   name: 'Menu',
   setup() {
     const axios = inject('axios')
-    let menus = reactive({
+    let menusTree = reactive({
       data: []
     })
     let defaultProps = {
-      children: 'children',
       label: 'name',
+      children: 'children',
     }
 
-    function listMenu() {
-      axios.get('/resNav/menu/listMenu').then(
+    function listMenusTree() {
+      axios.get('/resNav/menu/listMenusTree').then(
         response => {
-          menus.data = response.data.data.records
+          console.log(response.data.data);
+          menusTree.data = response.data.data
+
+          console.log(menusTree.data);
         }
       )
     }
-
-    listMenu();
+    listMenusTree();
 
     return {
-      menus,
-      defaultProps
+      menusTree,
+      defaultProps,
+      listMenusTree
     }
   }
 }

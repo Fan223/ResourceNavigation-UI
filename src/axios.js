@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 import router from './router'
 
 const request = axios.create({
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -26,7 +26,7 @@ request.interceptors.response.use(response => {
       case 401:
         router.push('/login');
         ElMessage({
-          message: '登录已过期，请重新登录',
+          message: '登录已过期, 请重新登录',
           type: 'error'
         })
         break;
