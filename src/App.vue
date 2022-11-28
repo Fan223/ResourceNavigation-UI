@@ -3,8 +3,26 @@
 </template>
 
 <script>
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+
 export default {
   name: 'App',
+  setup() {
+    const router = useRouter()
+    const store = useStore()
+
+    router.isReady().then(() => {
+      if (router.currentRoute.value.fullPath !== '/home' || router.currentRoute.value.fullPath !== '/login') {
+        let addTab = {
+          name: router.currentRoute.value.meta.title,
+          permission: router.currentRoute.value.name
+        }
+
+        store.commit('ADD_TAB', addTab)
+      }
+    })
+  }
 }
 </script>
 
