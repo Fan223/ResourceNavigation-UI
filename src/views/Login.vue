@@ -51,7 +51,7 @@
           >登 录</el-button>
           <el-button
             size="large"
-            @click="resetForm('loginFormRef')"
+            @click="this.$refs.loginFormRef.resetFields()"
           >重 置</el-button>
         </el-form-item>
       </el-form>
@@ -65,15 +65,17 @@ import { getCurrentInstance, inject } from "@vue/runtime-core";
 import ViewUIPlus from 'view-ui-plus';
 import { useRouter } from 'vue-router'
 import qs from 'qs';
+import { useStore } from 'vuex';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Login',
   setup() {
     const axios = inject('axios');
-    const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
     const router = useRouter()
+    const store = useStore()
+    const ElMessage = inject('ElMessage')
 
     // 登录表单
     let loginForm = reactive({
@@ -106,29 +108,6 @@ export default {
           loadingStatus.value = true;
           ViewUIPlus.LoadingBar.start();
 
-          // axios({
-          //   method: 'post',
-          //   url: '/resNav/login',
-          //   data: {
-          //     username: loginForm.username,
-          //     password: loginForm.password,
-          //     captcha: loginForm.captcha,
-          //     loginToken: loginForm.loginToken
-          //   },
-          //   Headers: {
-          //     'Content-Type': 'application/x-www-form-urlencoded'
-          //   },
-          //   transformRequest: [
-          //     function (data) {
-          //       let ret = ''
-          //       for (let it in data) {
-          //         ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-          //       }
-
-          //       return ret.substring(0, ret.lastIndexOf('&'));
-          //     }
-          //   ]
-          // })
           axios.post('/resNav/login?' + qs.stringify(loginForm)).then((response) => {
             loadingStatus.value = false;
 
@@ -136,18 +115,19 @@ export default {
               ViewUIPlus.LoadingBar.finish();
               ElMessage({
                 message: response.data.msg,
-                type: 'success',
+                type: 'success'
               })
 
               const JWT = response.headers.authorization
               localStorage.setItem('JWT', JWT)
-
+              store.state.menu.tabs = []
+              store.state.menu.activeTabName = 'Home'
               router.push('/home');
             } else {
               ViewUIPlus.LoadingBar.error();
               ElMessage({
                 message: response.data.msg,
-                type: 'error',
+                type: 'error'
               })
 
               getCaptcha()
@@ -160,17 +140,12 @@ export default {
       });
     }
 
-    function resetForm(ref) {
-      proxy.$refs[ref].resetFields()
-    }
-
     return {
       loginForm,
       captchaImg,
       loginFormRules,
       login,
       loadingStatus,
-      resetForm,
       getCaptcha,
     };
   },

@@ -27,6 +27,7 @@
     empty-text="加载中..."
     show-header
     height="400px"
+    :header-cell-style="{background:'#ddd'}"
   >
     <el-table-column type="selection" />
     <el-table-column
@@ -61,7 +62,24 @@
       label="类型"
       align="center"
       sortable
-    />
+    >
+      <template #default="scope">
+        <el-tag
+          v-if="scope.row.type === 0"
+          size="small"
+        >目录</el-tag>
+        <el-tag
+          v-else-if="scope.row.type === 1"
+          size="small"
+          type="success"
+        >菜单</el-tag>
+        <el-tag
+          v-else-if="scope.row.type === 2"
+          size="small"
+          type="info"
+        >按钮</el-tag>
+      </template>
+    </el-table-column>
     <el-table-column
       prop="icon"
       label="图标"
@@ -78,7 +96,7 @@
       label="状态"
       align="center"
     >
-      <template v-slot="scope">
+      <template #default="scope">
         <el-tag
           v-if="scope.row.flag === 'N'"
           size="small"
@@ -113,6 +131,8 @@
           confirm-button-text="确定"
           cancel-button-text="取消"
           title="确定删除吗?"
+          :icon="InfoFilled"
+          icon-color="#626AEF"
           @confirm="deleteMenu(scope.row)"
         >
           <template #reference>
@@ -134,14 +154,17 @@
 
 <script>
 import { reactive } from '@vue/reactivity'
-import { inject } from '@vue/runtime-core'
+import { getCurrentInstance, inject } from '@vue/runtime-core'
 import MenuAdd from './MenuAdd.vue';
+import { InfoFilled } from '@element-plus/icons-vue'
+
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Menu',
   setup() {
     const axios = inject('axios')
+    const { proxy } = getCurrentInstance()
 
     let menusTree = reactive({
       data: []
@@ -157,10 +180,10 @@ export default {
     function listMenusTree() {
       dialog.dialogVisible = false,
         menusTree.data = []
-      axios.get('/resNav/menu/listMenusTree').then(
-        response => {
-          menusTree.data.push.apply(menusTree.data, response.data.data)
-        }
+      axios.get('/resNav/menu/listMenusTree').then(response => {
+        menusTree.data.push.apply(menusTree.data, response.data.data)
+        proxy.listNavMenus()
+      }
       )
     }
     listMenusTree();
@@ -182,7 +205,8 @@ export default {
       menuAddEmit,
       listMenusTree,
       dialog,
-      deleteMenu
+      deleteMenu,
+      InfoFilled
     }
   },
   components: {

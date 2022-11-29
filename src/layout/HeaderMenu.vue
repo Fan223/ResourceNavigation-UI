@@ -57,9 +57,8 @@ export default {
   border: none;
   height: 49px;
   width: 45px;
-  margin-bottom: 1px;
+  margin-bottom: 3px;
   font-size: 20px;
-  /* border-bottom: 1px solid #ccc; */
 }
 .header-collapse-button:hover {
   background-color: #ccc;

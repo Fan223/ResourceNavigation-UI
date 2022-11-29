@@ -17,6 +17,8 @@ import VueAxios from 'vue-axios'
 // View Design
 import 'view-ui-plus/dist/styles/viewuiplus.css'
 import { LoadingBar } from 'view-ui-plus'
+// 引入全局混入
+import mixin from './mixin'
 
 
 const app = createApp(App)
@@ -25,6 +27,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 app.component('LoadingBar', LoadingBar);
+
+app.mixin(mixin)
 
 app.use(store)
   .use(router)

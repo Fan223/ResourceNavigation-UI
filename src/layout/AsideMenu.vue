@@ -7,7 +7,7 @@
 
     <el-menu-item
       index="Title"
-      @click="$router.go(0)"
+      @click="this.$router.go(0)"
     >
       <el-icon>
         <Menu />

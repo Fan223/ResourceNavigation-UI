@@ -6,12 +6,12 @@
     destroy-on-close
     :close-on-click-modal="false"
     align-center
-    ref="MenuAddDialog"
   >
     <el-form
       label-position="right"
       label-width="80px"
       :model="menuAddForm"
+      ref="menuAddFormRef"
     >
       <el-form-item
         label="上级菜单"
@@ -25,7 +25,7 @@
           check-strictly
           :render-after-expand="false"
           show-checkbox
-          :props="defaultProps"
+          :props="{ label: 'name', children: 'children' }"
           clearable
         />
       </el-form-item>
@@ -52,12 +52,6 @@
         prop="component"
       >
         <el-input v-model="menuAddForm.component" />
-      </el-form-item>
-      <el-form-item
-        label="类型"
-        prop="type"
-      >
-        <el-input v-model="menuAddForm.type" />
       </el-form-item>
       <el-form-item
         label="图标"
@@ -112,26 +106,24 @@
 
 <script>
 import { reactive } from '@vue/reactivity'
-import { inject } from '@vue/runtime-core'
+import { getCurrentInstance, inject } from '@vue/runtime-core'
 
 export default {
   name: 'MenuAdd',
   props: ['menusTree', 'dialog'],
   setup(props, context) {
     const axios = inject('axios')
+    const { proxy } = getCurrentInstance()
 
     let menuAddForm = reactive({
       flag: 'Y',
       orderNum: 1,
       parentId: ''
     })
-    let defaultProps = {
-      label: 'name',
-      children: 'children',
-    }
 
     function addMenu() {
       axios.post('/resNav/menu/addMenu', menuAddForm).then(() => {
+        proxy.$refs.menuAddFormRef.resetFields()
         context.emit('listMenusTree')
       })
     }
@@ -140,7 +132,6 @@ export default {
       addMenu,
       props,
       menuAddForm,
-      defaultProps,
     }
   }
 }
