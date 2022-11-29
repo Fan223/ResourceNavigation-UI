@@ -13,7 +13,8 @@ export default {
     const store = useStore()
 
     router.isReady().then(() => {
-      if (router.currentRoute.value.fullPath !== '/home' || router.currentRoute.value.fullPath !== '/login') {
+      console.log(router.currentRoute.value);
+      if (router.currentRoute.value.fullPath !== '/home' && router.currentRoute.value.fullPath !== '/login') {
         let addTab = {
           name: router.currentRoute.value.meta.title,
           permission: router.currentRoute.value.name
