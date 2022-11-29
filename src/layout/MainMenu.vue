@@ -27,7 +27,7 @@
     </el-container>
 
     <!-- 底部 -->
-    <el-footer height="30px">
+    <el-footer height="25px">
       <FooterMenu />
     </el-footer>
   </el-container>
@@ -53,6 +53,8 @@ export default {
 <style scoped>
 .layout {
   height: 100vh;
+  min-height: 520px;
+  min-width: 520px;
 }
 .el-aside {
   background-color: #001529;
@@ -60,22 +62,14 @@ export default {
 .el-header {
   height: 50px;
   line-height: 50px;
-  min-height: 50px;
-  min-width: 220px;
   background-color: #fff;
   border-bottom: 1px solid #ccc;
   padding: 0;
 }
 .el-main {
-  min-width: 220px;
-  min-height: 400px;
   padding: 0;
 }
 .el-footer {
-  line-height: 30px;
-  max-height: 30px;
-  min-height: 30px;
-  min-width: 420px;
   text-align: center;
   background: skyblue;
   color: white;

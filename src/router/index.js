@@ -47,7 +47,7 @@ router.beforeEach((to, from ,next) => {
   if (to.path === '/login') {
     next()
   } else if(!localStorage.getItem('JWT')) {
-    return { name: 'Login' }
+    next('/login')
   } else if (!hasRoute){
     axios.get('/resNav/auth/listNavMenus').then(response => {
       // 拿到 menus 菜单列表

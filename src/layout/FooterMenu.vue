@@ -11,5 +11,6 @@ export default {
 <style scoped>
 .footer {
   font-size: 15px;
+  line-height: 25px;
 }
 </style>

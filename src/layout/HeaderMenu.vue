@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-col :span="4">
+    <el-col :span="6">
       <el-button
         @click="collapsedAside"
         :icon="Fold"
@@ -17,10 +17,7 @@
       </el-button>
     </el-col>
 
-    <el-col
-      :span="4"
-      :offset="16"
-    >
+    <el-col :span="18">
       <el-avatar
         :size="40"
         :src="this.$store.state.url"
@@ -58,11 +55,11 @@ export default {
 }
 .header-collapse-button {
   border: none;
-  height: 50px;
+  height: 49px;
   width: 45px;
-  margin-bottom: 3px;
+  margin-bottom: 1px;
   font-size: 20px;
-  border-bottom: 1px solid #ccc;
+  /* border-bottom: 1px solid #ccc; */
 }
 .header-collapse-button:hover {
   background-color: #ccc;
