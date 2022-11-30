@@ -7,22 +7,28 @@
     :close-on-click-modal="false"
     align-center
     @open="listMenusByRoleId"
+    @close="this.$refs.assignPermissionFormRef.resetFields()"
   >
 
-    <el-tree
-      v-model="menuAddForm.parentId"
-      :data="menusTree.data"
-      check-strictly
-      :render-after-expand="false"
-      show-checkbox
-      :props="{ label: 'name', children: 'children' }"
-      clearable
-      node-key="id"
-      empty-text="加载中..."
-      highlight-current
-      default-expand-all
-      ref="menusTreeRef"
-    />
+    <el-form
+      :model="assignPermissionForm"
+      ref="assignPermissionFormRef"
+    >
+      <el-form-item prop="strictly">
+        <el-tree
+          :data="assignMenusTree.data"
+          :render-after-expand="false"
+          show-checkbox
+          :props="{ label: 'name', children: 'children' }"
+          node-key="id"
+          :check-strictly="assignPermissionForm.strictly"
+          empty-text="加载中..."
+          highlight-current
+          default-expand-all
+          ref="assignMenusTreeRef"
+        />
+      </el-form-item>
+    </el-form>
 
     <template #footer>
       <span class="dialog-footer">
@@ -41,31 +47,33 @@
 <script>
 import { getCurrentInstance, inject, reactive } from '@vue/runtime-core'
 import ViewUIPlus from 'view-ui-plus';
+import store from '@/store';
 
 export default {
   name: 'AssignMenu',
   props: ['dialog', 'roleId'],
-  setup(props) {
+  setup(props, context) {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
 
-    let menusTree = reactive({
+    let assignMenusTree = reactive({
       data: []
     })
-    let menuAddForm = reactive({
-      parentId: []
+    let assignPermissionForm = reactive({
+      strictly: true,
+      menuIds: []
     })
 
     function listMenusTree() {
-      menusTree.data = []
+      assignMenusTree.data = []
       ViewUIPlus.LoadingBar.start();
 
       axios.get('/resNav/menu/listMenusTree').then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          menusTree.data.push.apply(menusTree.data, response.data.data)
+          assignMenusTree.data.push.apply(assignMenusTree.data, response.data.data)
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -79,15 +87,16 @@ export default {
 
     function listMenusByRoleId() {
       ViewUIPlus.LoadingBar.start();
-      console.log(props.roleId);
 
       axios.get('/resNav/roleMenu/listMenusByRoleId', { params: { roleId: props.roleId } }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
           let checkedIds = response.data.data.map(menu => menu.id)
-
-          proxy.$nextTick(() => proxy.$refs.menusTreeRef.setCheckedKeys(checkedIds))
+          proxy.$nextTick(() => {
+            proxy.$refs.assignMenusTreeRef.setCheckedKeys(checkedIds)
+            assignPermissionForm.strictly = false
+          })
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -99,14 +108,35 @@ export default {
     }
 
     function assignMenu() {
-      console.log(proxy.$refs.menusTreeRef.getCheckedKeys());
+      assignPermissionForm.menuIds = proxy.$refs.assignMenusTreeRef.getCheckedKeys()
+        .concat(proxy.$refs.assignMenusTreeRef.getHalfCheckedKeys())
+
+      axios.post('/resNav/roleMenu/assignPermissions/' + props.roleId, assignPermissionForm).then(response => {
+        if (response.data.code === 200) {
+          ViewUIPlus.LoadingBar.finish()
+          ElMessage({
+            message: response.data.msg,
+            type: 'success'
+          })
+
+          context.emit('changeDialogVisible')
+          proxy.listNavMenus()
+          store.state.menu.hasRoute = false
+        } else {
+          ViewUIPlus.LoadingBar.error()
+          ElMessage({
+            message: response.data.msg,
+            type: 'error'
+          })
+        }
+      })
     }
 
     return {
       props,
       listMenusByRoleId,
-      menusTree,
-      menuAddForm,
+      assignMenusTree,
+      assignPermissionForm,
       assignMenu
     }
   }

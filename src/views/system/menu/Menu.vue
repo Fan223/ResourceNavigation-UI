@@ -10,11 +10,21 @@
           size="small"
           @click="dialog.addDialogVisible = true"
         >新增</el-button>
-        <el-button
-          type="danger"
-          size="small"
-          @click="multipleDeleteMenu"
-        >批量删除</el-button>
+        <el-popconfirm
+          confirm-button-text="确定"
+          cancel-button-text="取消"
+          title="确定删除吗?"
+          :icon="InfoFilled"
+          icon-color="#626AEF"
+          @confirm="multipleDeleteMenu"
+        >
+          <template #reference>
+            <el-button
+              type="danger"
+              size="small"
+            >批量删除</el-button>
+          </template>
+        </el-popconfirm>
       </div>
     </el-col>
   </el-row>

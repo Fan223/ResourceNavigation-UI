@@ -122,6 +122,7 @@
   <AssignMenu
     :dialog="dialog"
     :roleId="assignRoleId.value"
+    @changeDialogVisible="changeDialogVisible"
   />
 </template>
 
@@ -165,7 +166,6 @@ export default {
     function listRoles() {
       dialog.addDialogVisible = false
       dialog.editDialogVisible = false
-      dialog.assignDialogVisible = false
       roles.data = []
       ViewUIPlus.LoadingBar.start();
 
@@ -228,6 +228,10 @@ export default {
       assignRoleId.value = row.id
     }
 
+    function changeDialogVisible() {
+      dialog.assignDialogVisible = false
+    }
+
     return {
       roles,
       listRoles,
@@ -239,7 +243,8 @@ export default {
       updateRole,
       roleUpdateForm,
       assignMenu,
-      assignRoleId
+      assignRoleId,
+      changeDialogVisible
     }
   },
   components: {
