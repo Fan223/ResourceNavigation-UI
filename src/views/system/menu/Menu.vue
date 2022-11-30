@@ -8,11 +8,12 @@
         <el-button
           type="primary"
           size="small"
-          @click="menuAddEmit"
+          @click="dialog.addDialogVisible = true"
         >新增</el-button>
         <el-button
           type="danger"
           size="small"
+          @click="multipleDeleteMenu"
         >批量删除</el-button>
       </div>
     </el-col>
@@ -28,6 +29,7 @@
     show-header
     height="400px"
     :header-cell-style="{background:'#ddd'}"
+    @selection-change="selectionChange"
   >
     <el-table-column type="selection" />
     <el-table-column
@@ -46,7 +48,7 @@
     <el-table-column
       prop="permission"
       label="权限编码"
-      width="100px"
+      width="120px"
       align="center"
       sortable
     />
@@ -55,7 +57,7 @@
       label="组件"
       align="center"
       sortable
-      width="160px"
+      width="180px"
     />
     <el-table-column
       prop="type"
@@ -119,13 +121,14 @@
     <el-table-column
       label="操作"
       align="center"
-      width="200"
+      width="180px"
       fixed="right"
     >
       <template #default="scope">
         <el-button
           type="primary"
           size="small"
+          @click="updateMenu(scope.row)"
         >编辑</el-button>
         <el-popconfirm
           confirm-button-text="确定"
@@ -150,14 +153,22 @@
     :dialog="dialog"
     @listMenusTree="listMenusTree"
   />
+  <MenuEdit
+    :menusTree="menusTree.data"
+    :dialog="dialog"
+    @listMenusTree="listMenusTree"
+    :menuUpdateForm="menuUpdateForm.data"
+  />
 </template>
 
 <script>
 import { reactive } from '@vue/reactivity'
 import { getCurrentInstance, inject } from '@vue/runtime-core'
 import MenuAdd from './MenuAdd.vue';
+import MenuEdit from './MenuEdit.vue';
 import { InfoFilled } from '@element-plus/icons-vue'
-
+import ViewUIPlus from 'view-ui-plus';
+import '@/assets/css/mainStyle.css'
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -165,62 +176,103 @@ export default {
   setup() {
     const axios = inject('axios')
     const { proxy } = getCurrentInstance()
+    const ElMessage = inject('ElMessage')
 
+    let multipleSelection = reactive({
+      value: []
+    })
     let menusTree = reactive({
       data: []
     })
-    let defaultProps = {
-      label: 'name',
-      children: 'children',
-    }
     let dialog = reactive({
-      dialogVisible: false
+      addDialogVisible: false,
+      editDialogVisible: false
+    })
+    let menuUpdateForm = reactive({
+      data: {}
     })
 
+
     function listMenusTree() {
-      dialog.dialogVisible = false,
-        menusTree.data = []
+      dialog.addDialogVisible = false
+      dialog.editDialogVisible = false
+      menusTree.data = []
+      ViewUIPlus.LoadingBar.start();
+
       axios.get('/resNav/menu/listMenusTree').then(response => {
-        menusTree.data.push.apply(menusTree.data, response.data.data)
-        proxy.listNavMenus()
-      }
-      )
+        if (response.data.code === 200) {
+          ViewUIPlus.LoadingBar.finish();
+
+          menusTree.data.push.apply(menusTree.data, response.data.data)
+        } else {
+          ViewUIPlus.LoadingBar.error();
+          ElMessage({
+            message: response.data.msg,
+            type: 'error'
+          })
+        }
+      })
     }
     listMenusTree();
 
-    function menuAddEmit() {
-      dialog.dialogVisible = true
+    function deleteMenu(row) {
+      let ids = row.id ? [row.id] : row
+      ViewUIPlus.LoadingBar.start();
+
+      axios.delete('/resNav/menu/deleteMenu', { data: { ids: ids } }).then(response => {
+        if (response.data.code === 200) {
+          ViewUIPlus.LoadingBar.finish();
+          ElMessage({
+            message: response.data.msg,
+            type: 'success'
+          })
+
+          listMenusTree()
+          proxy.listNavMenus()
+        } else {
+          ViewUIPlus.LoadingBar.error();
+          ElMessage({
+            message: response.data.msg,
+            type: 'error'
+          })
+        }
+      })
     }
 
-    function deleteMenu(row) {
-      let ids = [row.id]
-      axios.delete('/resNav/menu/deleteMenu', { data: { ids: ids } }).then(() => {
-        listMenusTree()
-      })
+    function selectionChange(val) {
+      multipleSelection.value = val
+    }
+
+    function multipleDeleteMenu() {
+      let ids = multipleSelection.value.map(select => select.id);
+      deleteMenu(ids)
+    }
+
+    function updateMenu(row) {
+      dialog.editDialogVisible = true
+      menuUpdateForm.data = row
     }
 
     return {
       menusTree,
-      defaultProps,
-      menuAddEmit,
       listMenusTree,
       dialog,
       deleteMenu,
-      InfoFilled
+      InfoFilled,
+      selectionChange,
+      multipleDeleteMenu,
+      updateMenu,
+      menuUpdateForm
     }
   },
   components: {
-    MenuAdd
+    MenuAdd,
+    MenuEdit
   }
 }
 </script>
 
 <style scoped>
-.main-header-button {
-  float: right;
-  margin-right: 40px;
-  /* border: 1px solid red; */
-}
 .el-table {
   margin-top: 3px;
 }

@@ -2,14 +2,14 @@
   <el-row>
     <el-col :span="6">
       <el-button
-        @click="collapsedAside"
+        @click="changeCollapsed"
         :icon="Fold"
         v-if="!this.$store.state.isCollapsed"
         class="header-collapse-button"
       >
       </el-button>
       <el-button
-        @click="collapsedAside"
+        @click="changeCollapsed"
         :icon="Expand"
         v-if="this.$store.state.isCollapsed"
         class="header-collapse-button"
@@ -18,32 +18,73 @@
     </el-col>
 
     <el-col :span="18">
-      <el-avatar
-        :size="40"
-        :src="this.$store.state.url"
+      <el-dropdown
         class="header-avatar"
-      />
+        trigger="click"
+        size="small"
+      >
+        <span>
+          <el-avatar
+            :size="40"
+            :src="this.$store.state.url"
+          />
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import { useStore } from 'vuex'
 import { Fold, Expand } from '@element-plus/icons-vue'
+import { inject } from '@vue/runtime-core'
+import { useStore } from 'vuex'
+import ViewUIPlus from 'view-ui-plus';
+import { useRouter } from 'vue-router';
+
 
 export default {
   name: 'HeaderMenu',
   setup() {
+    const axios = inject('axios')
     const store = useStore()
+    const ElMessage = inject('ElMessage')
+    const router = useRouter()
 
-    function collapsedAside() {
+    function logout() {
+      axios.post('/resNav/logout').then(response => {
+        if (response.data.code === 200) {
+          ViewUIPlus.LoadingBar.finish()
+          ElMessage({
+            message: response.data.msg,
+            type: 'success'
+          })
+
+          localStorage.removeItem('JWT');
+          router.push('/login')
+        } else {
+          ViewUIPlus.LoadingBar.error()
+          ElMessage({
+            message: response.data.msg,
+            type: 'error'
+          })
+        }
+      })
+    }
+
+    function changeCollapsed() {
       store.state.isCollapsed = !store.state.isCollapsed
     }
 
     return {
-      collapsedAside,
       Fold,
-      Expand
+      Expand,
+      logout,
+      changeCollapsed
     }
   }
 }

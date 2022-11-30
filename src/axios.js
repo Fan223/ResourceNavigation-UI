@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ElMessage } from 'element-plus'
 import router from './router'
+import ViewUIPlus from 'view-ui-plus';
 
 const request = axios.create({
   timeout: 10000,
@@ -21,8 +22,16 @@ request.interceptors.request.use(config => {
 request.interceptors.response.use(response => {
   return response;
 }, error => {
+  ViewUIPlus.LoadingBar.error()
+  
   if (error.response) {
     switch (error.response.status) {
+      case 400: 
+        ElMessage({
+          message: '请求错误',
+          type: 'error'
+        })
+        break;
       case 401:
         router.push('/login');
         ElMessage({

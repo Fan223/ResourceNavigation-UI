@@ -1,18 +1,18 @@
 <template>
   <el-dialog
-    v-model="props.dialog.addDialogVisible"
+    v-model="props.dialog.editDialogVisible"
     title="Notice"
     width="50%"
     destroy-on-close
     :close-on-click-modal="false"
     align-center
-    @close="this.$refs.menuAddFormRef.resetFields()"
+    @close="this.$refs.menuUpdateFormRef.resetFields()"
   >
     <el-form
       label-position="right"
       label-width="80px"
-      :model="menuAddForm"
-      ref="menuAddFormRef"
+      :model="props.menuUpdateForm"
+      ref="menuUpdateFormRef"
     >
       <el-form-item
         label="上级菜单"
@@ -20,7 +20,7 @@
       >
         <el-tree-select
           placeholder="请选择上级菜单"
-          v-model="menuAddForm.parentId"
+          v-model="props.menuUpdateForm.parentId"
           value-key="id"
           :data="props.menusTree"
           check-strictly
@@ -34,37 +34,37 @@
         label="名称"
         prop="name"
       >
-        <el-input v-model="menuAddForm.name" />
+        <el-input v-model="props.menuUpdateForm.name" />
       </el-form-item>
       <el-form-item
         label="路径"
         prop="path"
       >
-        <el-input v-model="menuAddForm.path" />
+        <el-input v-model="props.menuUpdateForm.path" />
       </el-form-item>
       <el-form-item
         label="权限编码"
         prop="permission"
       >
-        <el-input v-model="menuAddForm.permission" />
+        <el-input v-model="props.menuUpdateForm.permission" />
       </el-form-item>
       <el-form-item
         label="组件"
         prop="component"
       >
-        <el-input v-model="menuAddForm.component" />
+        <el-input v-model="props.menuUpdateForm.component" />
       </el-form-item>
       <el-form-item
         label="图标"
         prop="icon"
       >
-        <el-input v-model="menuAddForm.icon" />
+        <el-input v-model="props.menuUpdateForm.icon" />
       </el-form-item>
       <el-form-item
         label="类型"
         prop="type"
       >
-        <el-radio-group v-model="menuAddForm.type">
+        <el-radio-group v-model="props.menuUpdateForm.type">
           <el-radio :label=0>目录</el-radio>
           <el-radio :label=1>菜单</el-radio>
           <el-radio :label=2>按钮</el-radio>
@@ -74,7 +74,7 @@
         label="状态"
         prop="flag"
       >
-        <el-radio-group v-model="menuAddForm.flag">
+        <el-radio-group v-model="props.menuUpdateForm.flag">
           <el-radio label='Y'>正常</el-radio>
           <el-radio label='N'>禁用</el-radio>
         </el-radio-group>
@@ -84,7 +84,7 @@
         prop="orderNum"
       >
         <el-input-number
-          v-model="menuAddForm.orderNum"
+          v-model="props.menuUpdateForm.orderNum"
           :min="1"
           label="排序号"
         >1</el-input-number>
@@ -93,10 +93,10 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="props.dialog.addDialogVisible = false">取 消</el-button>
+        <el-button @click="props.dialog.editDialogVisible = false">取 消</el-button>
         <el-button
           type="primary"
-          @click="addMenu"
+          @click="updateMenu"
         >
           确 认
         </el-button>
@@ -106,29 +106,22 @@
 </template>
 
 <script>
-import { reactive } from '@vue/reactivity'
 import { inject } from '@vue/runtime-core'
 import ViewUIPlus from 'view-ui-plus';
 
 export default {
-  name: 'MenuAdd',
-  props: ['menusTree', 'dialog'],
+  name: 'MenuEdit',
+  props: ['menusTree', 'dialog', 'menuUpdateForm'],
   setup(props, context) {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
 
-    let menuAddForm = reactive({
-      flag: 'Y',
-      orderNum: 1,
-      parentId: ''
-    })
+    function updateMenu() {
+      ViewUIPlus.LoadingBar.start();
 
-    function addMenu() {
-      ViewUIPlus.LoadingBar.start()
-
-      axios.post('/resNav/menu/addMenu', menuAddForm).then(response => {
+      axios.put('/resNav/menu/updateMenu', props.menuUpdateForm).then(response => {
         if (response.data.code === 200) {
-          ViewUIPlus.LoadingBar.finish()
+          ViewUIPlus.LoadingBar.finish();
           ElMessage({
             message: response.data.msg,
             type: 'success'
@@ -136,20 +129,18 @@ export default {
 
           context.emit('listMenusTree')
         } else {
-          ViewUIPlus.LoadingBar.error()
+          ViewUIPlus.LoadingBar.error();
           ElMessage({
             message: response.data.msg,
             type: 'error'
           })
         }
-
       })
     }
 
     return {
-      addMenu,
       props,
-      menuAddForm,
+      updateMenu,
     }
   }
 }

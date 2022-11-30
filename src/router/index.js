@@ -4,6 +4,8 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '../store'
 // 引入 axios
 import axios from '../axios'
+// 引入饿了么UI消息通知
+import { ElMessage } from 'element-plus'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -47,6 +49,10 @@ router.beforeEach((to, from ,next) => {
   if (to.path === '/login') {
     next()
   } else if(!localStorage.getItem('JWT')) {
+    ElMessage({
+      message: '请先登录',
+      type: 'error'
+    })
     next('/login')
   } else if (!hasRoute){
     axios.get('/resNav/auth/listNavMenus').then(response => {

@@ -121,7 +121,8 @@ export default {
               const JWT = response.headers.authorization
               localStorage.setItem('JWT', JWT)
               store.state.menu.tabs = []
-              store.state.menu.activeTabName = 'Home'
+              store.state.menu.activeTabName = store.state.menu.homeTab.name
+
               router.push('/home');
             } else {
               ViewUIPlus.LoadingBar.error();
