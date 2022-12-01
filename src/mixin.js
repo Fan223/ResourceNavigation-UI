@@ -16,5 +16,9 @@ export default {
         store.commit('SET_AUTHORITIES', response.data.data.authorities);
       })
     },
+
+    refreshTabs() {
+      
+    }
   }
 }
