@@ -2,9 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 // vue-router
-import router from './router'
+import router from '@/router'
 // VueX
-import store from './store'
+import store from '@/store'
 // 饿了么UI
 import 'element-plus/dist/index.css'
 import ElementPlus from 'element-plus'
@@ -12,13 +12,13 @@ import { ElMessage } from 'element-plus'
 // 饿了么UI 图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // vue-axios
-import request from './axios'
+import request from '@/axios'
 import VueAxios from 'vue-axios'
 // View Design
 import 'view-ui-plus/dist/styles/viewuiplus.css'
 import { LoadingBar } from 'view-ui-plus'
 // 引入全局混入
-import mixin from './mixin'
+import mixin from '@/mixin'
 
 
 const app = createApp(App)

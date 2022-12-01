@@ -1,5 +1,5 @@
-import axios from './axios';
-import store from './store';
+import axios from '@/axios';
+import store from '@/store';
 
 export default {
   methods: {
@@ -8,7 +8,7 @@ export default {
        return permissionList.indexOf(permission) > -1
     },
 
-    listNavMenus() {
+    refreshNavMenus() {
       axios.get('/resNav/auth/listNavMenus').then(response => {
         // 拿到 menus 菜单列表
         store.commit('SET_MENUS', response.data.data.menus);

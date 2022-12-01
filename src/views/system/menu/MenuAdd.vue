@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="props.dialog.addDialogVisible"
-    title="Notice"
+    title="添加菜单"
     width="50%"
     destroy-on-close
     :close-on-click-modal="false"

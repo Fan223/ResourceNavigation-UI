@@ -1,36 +1,36 @@
 <template>
   <el-dialog
     v-model="props.dialog.editDialogVisible"
-    title="更新角色"
+    title="修改角色"
     width="50%"
     destroy-on-close
     :close-on-click-modal="false"
     align-center
-    @close="this.$refs.roleUpdateFormRef.resetFields()"
+    @close="this.$refs.roleUpdateRowRef.resetFields()"
   >
     <el-form
       label-position="right"
       label-width="80px"
-      :model="props.roleUpdateForm"
-      ref="roleUpdateFormRef"
+      :model="props.roleUpdateRow"
+      ref="roleUpdateRowRef"
     >
       <el-form-item
         label="名称"
         prop="name"
       >
-        <el-input v-model="props.roleUpdateForm.name" />
+        <el-input v-model="props.roleUpdateRow.name" />
       </el-form-item>
       <el-form-item
         label="角色编码"
         prop="code"
       >
-        <el-input v-model="props.roleUpdateForm.code" />
+        <el-input v-model="props.roleUpdateRow.code" />
       </el-form-item>
       <el-form-item
         label="状态"
         prop="flag"
       >
-        <el-radio-group v-model="props.roleUpdateForm.flag">
+        <el-radio-group v-model="props.roleUpdateRow.flag">
           <el-radio label='Y'>正常</el-radio>
           <el-radio label='N'>禁用</el-radio>
         </el-radio-group>
@@ -41,7 +41,7 @@
       >
         <el-input
           type="textarea"
-          v-model="props.roleUpdateForm.remark"
+          v-model="props.roleUpdateRow.remark"
         />
       </el-form-item>
     </el-form>
@@ -66,7 +66,7 @@ import ViewUIPlus from 'view-ui-plus';
 
 export default {
   name: 'RoleEdit',
-  props: ['dialog', 'roleUpdateForm'],
+  props: ['dialog', 'roleUpdateRow'],
   setup(props, context) {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
@@ -74,7 +74,7 @@ export default {
     function updateRole() {
       ViewUIPlus.LoadingBar.start();
 
-      axios.put('/resNav/role/updateRole', props.roleUpdateForm).then(response => {
+      axios.put('/resNav/role/updateRole', props.roleUpdateRow).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
           ElMessage({

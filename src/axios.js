@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ElMessage } from 'element-plus'
-import router from './router'
+import router from '@/router'
 import ViewUIPlus from 'view-ui-plus';
 
 const request = axios.create({

@@ -35,7 +35,7 @@
         <el-button @click="props.dialog.assignDialogVisible = false">取 消</el-button>
         <el-button
           type="primary"
-          @click="assignMenu"
+          @click="assignPermissions"
         >
           确 认
         </el-button>
@@ -47,15 +47,16 @@
 <script>
 import { getCurrentInstance, inject, reactive } from '@vue/runtime-core'
 import ViewUIPlus from 'view-ui-plus';
-import store from '@/store';
+import { useStore } from 'vuex';
 
 export default {
-  name: 'AssignMenu',
+  name: 'AssignPermission',
   props: ['dialog', 'roleId'],
   setup(props, context) {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
+    const store = useStore()
 
     let assignMenusTree = reactive({
       data: []
@@ -93,10 +94,8 @@ export default {
           ViewUIPlus.LoadingBar.finish();
 
           let checkedIds = response.data.data.map(menu => menu.id)
-          proxy.$nextTick(() => {
-            proxy.$refs.assignMenusTreeRef.setCheckedKeys(checkedIds)
-            assignPermissionForm.strictly = false
-          })
+          proxy.$refs.assignMenusTreeRef.setCheckedKeys(checkedIds)
+          assignPermissionForm.strictly = false
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -107,7 +106,7 @@ export default {
       })
     }
 
-    function assignMenu() {
+    function assignPermissions() {
       assignPermissionForm.menuIds = proxy.$refs.assignMenusTreeRef.getCheckedKeys()
         .concat(proxy.$refs.assignMenusTreeRef.getHalfCheckedKeys())
 
@@ -120,7 +119,7 @@ export default {
           })
 
           context.emit('changeDialogVisible')
-          proxy.listNavMenus()
+          proxy.refreshNavMenus()
           store.state.menu.hasRoute = false
         } else {
           ViewUIPlus.LoadingBar.error()
@@ -137,7 +136,7 @@ export default {
       listMenusByRoleId,
       assignMenusTree,
       assignPermissionForm,
-      assignMenu
+      assignPermissions
     }
   }
 }

@@ -39,7 +39,7 @@
     show-header
     height="400px"
     :header-cell-style="{background:'#ddd'}"
-    @selection-change="selectionChange"
+    ref="menuTableRef"
   >
     <el-table-column type="selection" />
     <el-table-column
@@ -167,17 +167,17 @@
     :menusTree="menusTree.data"
     :dialog="dialog"
     @listMenusTree="listMenusTree"
-    :menuUpdateForm="menuUpdateForm.data"
+    :menuUpdateRow="menuUpdateRow.data"
   />
 </template>
 
 <script>
 import { reactive } from '@vue/reactivity'
 import { getCurrentInstance, inject } from '@vue/runtime-core'
-import MenuAdd from './MenuAdd.vue';
-import MenuEdit from './MenuEdit.vue';
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
+import MenuAdd from './MenuAdd.vue';
+import MenuEdit from './MenuEdit.vue';
 import '@/assets/css/mainStyle.css'
 
 export default {
@@ -188,9 +188,6 @@ export default {
     const { proxy } = getCurrentInstance()
     const ElMessage = inject('ElMessage')
 
-    let multipleSelection = reactive({
-      value: []
-    })
     let menusTree = reactive({
       data: []
     })
@@ -198,7 +195,7 @@ export default {
       addDialogVisible: false,
       editDialogVisible: false
     })
-    let menuUpdateForm = reactive({
+    let menuUpdateRow = reactive({
       data: {}
     })
 
@@ -238,7 +235,7 @@ export default {
           })
 
           listMenusTree()
-          proxy.listNavMenus()
+          proxy.refreshNavMenus()
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -249,18 +246,23 @@ export default {
       })
     }
 
-    function selectionChange(val) {
-      multipleSelection.value = val
-    }
-
     function multipleDeleteMenu() {
-      let ids = multipleSelection.value.map(select => select.id);
-      deleteMenu(ids)
+      let ids = proxy.$refs.menuTableRef.getSelectionRows().map(select => select.id);
+      console.log(ids);
+
+      if (ids.length > 0) {
+        deleteMenu(ids)
+      } else {
+        ElMessage({
+          message: '未选中任何行',
+          type: 'error'
+        })
+      }
     }
 
     function updateMenu(row) {
       dialog.editDialogVisible = true
-      menuUpdateForm.data = row
+      menuUpdateRow.data = row
     }
 
     return {
@@ -269,10 +271,9 @@ export default {
       dialog,
       deleteMenu,
       InfoFilled,
-      selectionChange,
       multipleDeleteMenu,
       updateMenu,
-      menuUpdateForm
+      menuUpdateRow
     }
   },
   components: {

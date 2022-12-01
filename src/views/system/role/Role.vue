@@ -10,11 +10,21 @@
           size="small"
           @click="dialog.addDialogVisible = true"
         >新增</el-button>
-        <el-button
-          type="danger"
-          size="small"
-          @click="multipleDeleteRole"
-        >批量删除</el-button>
+        <el-popconfirm
+          confirm-button-text="确定"
+          cancel-button-text="取消"
+          title="确定删除吗?"
+          :icon="InfoFilled"
+          icon-color="#626AEF"
+          @confirm="multipleDeleteRole"
+        >
+          <template #reference>
+            <el-button
+              type="danger"
+              size="small"
+            >批量删除</el-button>
+          </template>
+        </el-popconfirm>
       </div>
     </el-col>
   </el-row>
@@ -29,14 +39,15 @@
     show-header
     height="400px"
     :header-cell-style="{background:'#ddd'}"
-    @selection-change="selectionChange"
+    ref="roleTableRef"
   >
     <el-table-column type="selection" />
     <el-table-column
       prop="name"
       label="名称"
       sortable
-      width="150px"
+      align="center"
+      width="100px"
     />
     <el-table-column
       prop="code"
@@ -49,6 +60,7 @@
       prop="flag"
       label="状态"
       align="center"
+      width="100px"
     >
       <template #default="scope">
         <el-tag
@@ -85,7 +97,7 @@
         <el-button
           type="primary"
           size="small"
-          @click="assignMenu(scope.row)"
+          @click="assignPermissions(scope.row)"
         >分配权限</el-button>
         <el-button
           type="primary"
@@ -117,9 +129,9 @@
   <RoleEdit
     :dialog="dialog"
     @listRoles="listRoles"
-    :roleUpdateForm="roleUpdateForm.data"
+    :roleUpdateRow="roleUpdateRow.data"
   />
-  <AssignMenu
+  <AssignPermission
     :dialog="dialog"
     :roleId="assignRoleId.value"
     @changeDialogVisible="changeDialogVisible"
@@ -129,11 +141,11 @@
 <script>
 import { reactive } from '@vue/reactivity'
 import { getCurrentInstance, inject } from '@vue/runtime-core'
-import RoleAdd from './RoleAdd.vue';
-import RoleEdit from './RoleEdit.vue';
-import AssignMenu from './AssignMenu.vue'
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
+import RoleAdd from './RoleAdd.vue';
+import RoleEdit from './RoleEdit.vue';
+import AssignPermission from './AssignPermission.vue'
 import '@/assets/css/mainStyle.css'
 
 export default {
@@ -144,9 +156,6 @@ export default {
     const { proxy } = getCurrentInstance()
     const ElMessage = inject('ElMessage')
 
-    let multipleSelection = reactive({
-      value: []
-    })
     let roles = reactive({
       data: []
     })
@@ -155,7 +164,7 @@ export default {
       editDialogVisible: false,
       assignDialogVisible: false
     })
-    let roleUpdateForm = reactive({
+    let roleUpdateRow = reactive({
       data: {}
     })
     let assignRoleId = reactive({
@@ -198,7 +207,7 @@ export default {
           })
 
           listRoles()
-          proxy.listNavMenus()
+          proxy.refreshNavMenus()
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -209,21 +218,25 @@ export default {
       })
     }
 
-    function selectionChange(val) {
-      multipleSelection.value = val
-    }
-
     function multipleDeleteRole() {
-      let ids = multipleSelection.value.map(select => select.id);
-      deleteRole(ids)
+      let ids = proxy.$refs.roleTableRef.getSelectionRows().map(select => select.id)
+
+      if (ids.length > 0) {
+        deleteRole(ids)
+      } else {
+        ElMessage({
+          message: '未选中任何行',
+          type: 'error'
+        })
+      }
     }
 
     function updateRole(row) {
       dialog.editDialogVisible = true
-      roleUpdateForm.data = row
+      roleUpdateRow.data = row
     }
 
-    function assignMenu(row) {
+    function assignPermissions(row) {
       dialog.assignDialogVisible = true
       assignRoleId.value = row.id
     }
@@ -234,23 +247,23 @@ export default {
 
     return {
       roles,
-      listRoles,
+      roleUpdateRow,
+      assignRoleId,
       dialog,
-      deleteRole,
       InfoFilled,
-      selectionChange,
+
+      deleteRole,
       multipleDeleteRole,
       updateRole,
-      roleUpdateForm,
-      assignMenu,
-      assignRoleId,
+      listRoles,
+      assignPermissions,
       changeDialogVisible
     }
   },
   components: {
     RoleAdd,
     RoleEdit,
-    AssignMenu
+    AssignPermission
   }
 }
 </script>
