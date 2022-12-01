@@ -179,6 +179,7 @@ import ViewUIPlus from 'view-ui-plus';
 import MenuAdd from './MenuAdd.vue';
 import MenuEdit from './MenuEdit.vue';
 import '@/assets/css/mainStyle.css'
+import { useStore } from 'vuex';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -187,6 +188,7 @@ export default {
     const axios = inject('axios')
     const { proxy } = getCurrentInstance()
     const ElMessage = inject('ElMessage')
+    const store = useStore()
 
     let menusTree = reactive({
       data: []
@@ -236,6 +238,7 @@ export default {
 
           listMenusTree()
           proxy.refreshNavMenus()
+          store.state.menu.hasRoute = false
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
