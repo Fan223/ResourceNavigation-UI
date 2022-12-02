@@ -36,7 +36,6 @@
     row-key="id"
     border
     stripe
-    default-expand-all
     empty-text="加载中..."
     show-header
     height="400px"
