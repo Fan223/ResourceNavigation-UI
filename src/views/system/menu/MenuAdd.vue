@@ -65,9 +65,9 @@
         prop="type"
       >
         <el-radio-group v-model="menuAddForm.type">
-          <el-radio :label=0>目录</el-radio>
-          <el-radio :label=1>菜单</el-radio>
-          <el-radio :label=2>按钮</el-radio>
+          <el-radio :label=1>目录</el-radio>
+          <el-radio :label=2>菜单</el-radio>
+          <el-radio :label=3>按钮</el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item

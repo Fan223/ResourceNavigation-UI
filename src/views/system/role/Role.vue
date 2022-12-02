@@ -6,6 +6,7 @@
     <el-col :span="18">
       <div class="main-header-button">
         <el-button
+          v-if="hasAuth('role:add')"
           type="primary"
           size="small"
           @click="dialog.addDialogVisible = true"
@@ -20,6 +21,7 @@
         >
           <template #reference>
             <el-button
+              v-if="hasAuth('role:delete')"
               type="danger"
               size="small"
             >批量删除</el-button>
@@ -88,6 +90,7 @@
       width="180px"
     />
     <el-table-column
+      v-if="hasAuth('roleMenu:assignPermission') || hasAuth('role:update') || hasAuth('role:delete')"
       label="操作"
       align="center"
       width="240px"
@@ -95,11 +98,13 @@
     >
       <template #default="scope">
         <el-button
+          v-if="hasAuth('roleMenu:assignPermission')"
           type="primary"
           size="small"
           @click="assignPermissions(scope.row)"
         >分配权限</el-button>
         <el-button
+          v-if="hasAuth('role:update')"
           type="primary"
           size="small"
           @click="updateRole(scope.row)"
@@ -114,6 +119,7 @@
         >
           <template #reference>
             <el-button
+              v-if="hasAuth('role:delete')"
               type="danger"
               size="small"
             >删除</el-button>

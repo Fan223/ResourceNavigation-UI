@@ -6,11 +6,13 @@
     <el-col :span="18">
       <div class="main-header-button">
         <el-button
+          v-if="hasAuth('menu:add')"
           type="primary"
           size="small"
           @click="dialog.addDialogVisible = true"
         >新增</el-button>
         <el-popconfirm
+          v-if="hasAuth('menu:delete')"
           confirm-button-text="确定"
           cancel-button-text="取消"
           title="确定删除吗?"
@@ -77,16 +79,16 @@
     >
       <template #default="scope">
         <el-tag
-          v-if="scope.row.type === 0"
+          v-if="scope.row.type === 1"
           size="small"
         >目录</el-tag>
         <el-tag
-          v-else-if="scope.row.type === 1"
+          v-else-if="scope.row.type === 2"
           size="small"
           type="success"
         >菜单</el-tag>
         <el-tag
-          v-else-if="scope.row.type === 2"
+          v-else-if="scope.row.type === 3"
           size="small"
           type="info"
         >按钮</el-tag>
@@ -129,6 +131,7 @@
       width="180px"
     />
     <el-table-column
+      v-if="hasAuth('menu:update') || hasAuth('menu:delete')"
       label="操作"
       align="center"
       width="180px"
@@ -136,6 +139,7 @@
     >
       <template #default="scope">
         <el-button
+          v-if="hasAuth('menu:update')"
           type="primary"
           size="small"
           @click="updateMenu(scope.row)"
@@ -150,6 +154,7 @@
         >
           <template #reference>
             <el-button
+              v-if="hasAuth('menu:delete')"
               type="danger"
               size="small"
             >删除</el-button>
@@ -179,7 +184,6 @@ import ViewUIPlus from 'view-ui-plus';
 import MenuAdd from './MenuAdd.vue';
 import MenuEdit from './MenuEdit.vue';
 import '@/assets/css/mainStyle.css'
-import { useStore } from 'vuex';
 
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
@@ -188,7 +192,6 @@ export default {
     const axios = inject('axios')
     const { proxy } = getCurrentInstance()
     const ElMessage = inject('ElMessage')
-    const store = useStore()
 
     let menusTree = reactive({
       data: []
@@ -208,7 +211,7 @@ export default {
       menusTree.data = []
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/menu/listMenusTree').then(response => {
+      axios.get('/resNav/menu/listMenusTree', { params: { type: 0 } }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
@@ -238,7 +241,6 @@ export default {
 
           listMenusTree()
           proxy.refreshNavMenus()
-          store.state.menu.hasRoute = false
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({

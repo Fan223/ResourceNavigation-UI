@@ -40,7 +40,6 @@ request.interceptors.response.use(response => {
         })
         break;
       case 403:
-        console.log(error.response);
         ElMessage({
           message: error.response.data.msg,
           type: 'error'

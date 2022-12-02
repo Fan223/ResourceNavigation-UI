@@ -12,19 +12,19 @@
       >
         <h1>登录</h1>
         <el-form-item
-          label="用户名："
+          label="用户名: "
           prop="username"
         >
           <el-input v-model="loginForm.username" />
         </el-form-item>
         <el-form-item
-          label="密码："
+          label="密码: "
           prop="password"
         >
           <el-input v-model="loginForm.password" />
         </el-form-item>
         <el-form-item
-          label="验证码："
+          label="验证码: "
           prop="captcha"
         >
           <el-input

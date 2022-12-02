@@ -47,7 +47,6 @@
 <script>
 import { getCurrentInstance, inject, reactive } from '@vue/runtime-core'
 import ViewUIPlus from 'view-ui-plus';
-import { useStore } from 'vuex';
 
 export default {
   name: 'AssignPermission',
@@ -56,7 +55,7 @@ export default {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
-    const store = useStore()
+
 
     let assignMenusTree = reactive({
       data: []
@@ -70,7 +69,7 @@ export default {
       assignMenusTree.data = []
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/menu/listMenusTree').then(response => {
+      axios.get('/resNav/menu/listMenusTree', { params: { flag: 'Y', type: 0 } }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
@@ -120,7 +119,6 @@ export default {
 
           context.emit('changeDialogVisible')
           proxy.refreshNavMenus()
-          store.state.menu.hasRoute = false
         } else {
           ViewUIPlus.LoadingBar.error()
           ElMessage({
