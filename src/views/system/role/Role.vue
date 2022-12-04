@@ -12,6 +12,7 @@
           @click="dialog.addDialogVisible = true"
         >新增</el-button>
         <el-popconfirm
+          v-if="hasAuth('role:delete')"
           confirm-button-text="确定"
           cancel-button-text="取消"
           title="确定删除吗?"
@@ -21,7 +22,6 @@
         >
           <template #reference>
             <el-button
-              v-if="hasAuth('role:delete')"
               type="danger"
               size="small"
             >批量删除</el-button>
@@ -109,6 +109,7 @@
           @click="updateRole(scope.row)"
         >编辑</el-button>
         <el-popconfirm
+          v-if="hasAuth('role:delete')"
           confirm-button-text="确定"
           cancel-button-text="取消"
           title="确定删除吗?"
@@ -118,7 +119,6 @@
         >
           <template #reference>
             <el-button
-              v-if="hasAuth('role:delete')"
               type="danger"
               size="small"
             >删除</el-button>

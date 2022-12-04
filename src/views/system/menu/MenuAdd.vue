@@ -120,7 +120,8 @@ export default {
     let menuAddForm = reactive({
       flag: 'Y',
       orderNum: 1,
-      parentId: ''
+      parentId: '',
+      type: 1
     })
 
     function addMenu() {

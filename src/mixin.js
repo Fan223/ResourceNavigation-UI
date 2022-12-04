@@ -18,8 +18,9 @@ export default {
       })
     },
 
-    refreshTabs() {
-      
+    refreshTabs(menus) {
+      console.log(menus);
+      console.log(store.state.menu.tabs);
     }
   }
 }

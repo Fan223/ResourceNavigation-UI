@@ -36,7 +36,6 @@
     row-key="id"
     border
     stripe
-    default-expand-all
     empty-text="加载中..."
     show-header
     height="400px"
@@ -145,6 +144,7 @@
           @click="updateMenu(scope.row)"
         >编辑</el-button>
         <el-popconfirm
+          v-if="hasAuth('menu:delete')"
           confirm-button-text="确定"
           cancel-button-text="取消"
           title="确定删除吗?"
@@ -154,7 +154,6 @@
         >
           <template #reference>
             <el-button
-              v-if="hasAuth('menu:delete')"
               type="danger"
               size="small"
             >删除</el-button>
