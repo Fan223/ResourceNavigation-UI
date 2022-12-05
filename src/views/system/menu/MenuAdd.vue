@@ -34,31 +34,51 @@
         label="名称"
         prop="name"
       >
-        <el-input v-model="menuAddForm.name" />
+        <el-input
+          v-model="menuAddForm.name"
+          placeholder="请输入名称"
+          clearable
+        />
       </el-form-item>
       <el-form-item
         label="路径"
         prop="path"
       >
-        <el-input v-model="menuAddForm.path" />
+        <el-input
+          v-model="menuAddForm.path"
+          placeholder="请输入路径"
+          clearable
+        />
       </el-form-item>
       <el-form-item
         label="权限编码"
         prop="permission"
       >
-        <el-input v-model="menuAddForm.permission" />
+        <el-input
+          v-model="menuAddForm.permission"
+          placeholder="请输入权限编码"
+          clearable
+        />
       </el-form-item>
       <el-form-item
-        label="组件"
+        label="组件路径"
         prop="component"
       >
-        <el-input v-model="menuAddForm.component" />
+        <el-input
+          v-model="menuAddForm.component"
+          placeholder="请输入组件路径"
+          clearable
+        />
       </el-form-item>
       <el-form-item
         label="图标"
         prop="icon"
       >
-        <el-input v-model="menuAddForm.icon" />
+        <el-input
+          v-model="menuAddForm.icon"
+          placeholder="请输入图标"
+          clearable
+        />
       </el-form-item>
       <el-form-item
         label="类型"

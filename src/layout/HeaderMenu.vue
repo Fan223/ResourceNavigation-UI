@@ -21,7 +21,6 @@
       <el-dropdown
         class="header-avatar"
         trigger="click"
-        size="small"
       >
         <span>
           <el-avatar
@@ -31,7 +30,8 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+            <el-dropdown-item>个人中心</el-dropdown-item>
+            <el-dropdown-item @click="logout">注销</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -102,8 +102,8 @@ export default {
   font-size: 20px;
 }
 .header-collapse-button:hover {
-  background-color: #ccc;
-  color: black;
+  background-color: #fff;
+  color: #515a6e;
 }
 .header-avatar {
   float: right;

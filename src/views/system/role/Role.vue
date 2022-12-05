@@ -97,19 +97,19 @@
     >
       <template #default="scope">
         <el-button
-          v-if="hasAuth('roleMenu:assignPermission')"
+          v-if="hasAuth('roleMenu:assignPermission') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
           type="primary"
           size="small"
           @click="assignPermissions(scope.row)"
         >分配权限</el-button>
         <el-button
-          v-if="hasAuth('role:update')"
+          v-if="hasAuth('role:update') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
           type="primary"
           size="small"
           @click="updateRole(scope.row)"
         >编辑</el-button>
         <el-popconfirm
-          v-if="hasAuth('role:delete')"
+          v-if="hasAuth('role:delete') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
           confirm-button-text="确定"
           cancel-button-text="取消"
           title="确定删除吗?"

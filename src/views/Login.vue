@@ -87,7 +87,7 @@ export default {
     let captchaImg = ref('');
     let loadingStatus = ref(false);
 
-    // 表单验证规则
+    // 登录表单验证规则
     let loginFormRules = {
       username: [{ required: true, message: '请输入用户名', trigger: 'blur' },],
       password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
@@ -124,6 +124,7 @@ export default {
               store.state.menu.activeTabName = store.state.menu.homeTab.name
 
               router.push('/home');
+              store.state.menu.hasRoute = false
             } else {
               ViewUIPlus.LoadingBar.error();
               ElMessage({

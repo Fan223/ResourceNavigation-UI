@@ -1,32 +1,33 @@
 <template>
   <el-dialog
     v-model="props.dialog.assignDialogVisible"
-    title="分配权限"
+    title="分配角色"
     width="50%"
     destroy-on-close
     :close-on-click-modal="false"
     align-center
-    @open="listMenusByRoleId"
-    @close="this.$refs.assignPermissionFormRef.resetFields()"
+    @open="listRolesByUserId"
+    @close="this.$refs.assignRoleFormRef.resetFields()"
   >
 
     <el-form
-      :model="assignPermissionForm"
-      ref="assignPermissionFormRef"
+      :model="assignRoleForm"
+      ref="assignRoleFormRef"
     >
-      <el-form-item prop="strictly">
-        <el-tree
-          :data="assignMenusTree.data"
-          :render-after-expand="false"
-          show-checkbox
-          :props="{ label: 'name', children: 'children' }"
-          node-key="id"
-          :check-strictly="assignPermissionForm.strictly"
-          empty-text="加载中..."
-          highlight-current
-          default-expand-all
-          ref="assignMenusTreeRef"
-        />
+      <el-form-item>
+        <el-select
+          placeholder="请选择角色"
+          v-model="assignRoleForm.roleIds"
+          multiple
+          clearable
+        >
+          <el-option
+            v-for="role in roles.data"
+            :key="role.id"
+            :label="role.name"
+            :value="role.id"
+          />
+        </el-select>
       </el-form-item>
     </el-form>
 
@@ -35,7 +36,7 @@
         <el-button @click="props.dialog.assignDialogVisible = false">取 消</el-button>
         <el-button
           type="primary"
-          @click="assignPermissions"
+          @click="assignRoles"
         >
           确 认
         </el-button>
@@ -50,30 +51,28 @@ import ViewUIPlus from 'view-ui-plus';
 
 export default {
   name: 'AssignRole',
-  props: ['dialog', 'roleId'],
+  props: ['dialog', 'userId'],
   setup(props, context) {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
 
-
-    let assignMenusTree = reactive({
+    let roles = reactive({
       data: []
     })
-    let assignPermissionForm = reactive({
-      strictly: true,
-      menuIds: []
+    let assignRoleForm = reactive({
+      roleIds: ''
     })
 
-    function listMenusTree() {
-      assignMenusTree.data = []
+    function listRoles() {
+      roles.data = []
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/menu/listMenusTree', { params: { flag: 'Y', type: 0 } }).then(response => {
+      axios.get('/resNav/role/listRoles', { params: { flag: 'Y' } }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          assignMenusTree.data.push.apply(assignMenusTree.data, response.data.data)
+          roles.data.push.apply(roles.data, response.data.data)
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -83,18 +82,17 @@ export default {
         }
       })
     }
-    listMenusTree()
+    listRoles();
 
-    function listMenusByRoleId() {
+    function listRolesByUserId() {
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/roleMenu/listMenusByRoleId', { params: { roleId: props.roleId } }).then(response => {
+      axios.get('/resNav/userRole/listRolesByUserId/' + props.userId).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          let checkedIds = response.data.data.map(menu => menu.id)
-          proxy.$refs.assignMenusTreeRef.setCheckedKeys(checkedIds)
-          assignPermissionForm.strictly = false
+          let roleIds = response.data.data.map(role => role.id)
+          assignRoleForm.roleIds = roleIds
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -105,11 +103,8 @@ export default {
       })
     }
 
-    function assignPermissions() {
-      assignPermissionForm.menuIds = proxy.$refs.assignMenusTreeRef.getCheckedKeys()
-        .concat(proxy.$refs.assignMenusTreeRef.getHalfCheckedKeys())
-
-      axios.post('/resNav/roleMenu/assignPermissions/' + props.roleId, assignPermissionForm).then(response => {
+    function assignRoles() {
+      axios.post('/resNav/userRole/assignRoles/' + props.userId, assignRoleForm).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish()
           ElMessage({
@@ -131,14 +126,17 @@ export default {
 
     return {
       props,
-      listMenusByRoleId,
-      assignMenusTree,
-      assignPermissionForm,
-      assignPermissions
+      roles,
+      listRolesByUserId,
+      assignRoleForm,
+      assignRoles
     }
   }
 }
 </script>
 
-<style>
+<style scoped>
+.el-select {
+  width: 80%;
+}
 </style>

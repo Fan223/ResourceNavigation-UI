@@ -18,13 +18,21 @@
         label="名称"
         prop="name"
       >
-        <el-input v-model="roleAddForm.name" />
+        <el-input
+          v-model="roleAddForm.name"
+          clearable
+          placeholder="请输入名称"
+        />
       </el-form-item>
       <el-form-item
         label="角色编码"
         prop="code"
       >
-        <el-input v-model="roleAddForm.code" />
+        <el-input
+          v-model="roleAddForm.code"
+          clearable
+          placeholder="请输入角色编码"
+        />
       </el-form-item>
       <el-form-item
         label="状态"
@@ -42,6 +50,8 @@
         <el-input
           type="textarea"
           v-model="roleAddForm.remark"
+          :autosize="{ minRows: 2, maxRows: 4 }"
+          placeholder="请输入备注"
         />
       </el-form-item>
     </el-form>

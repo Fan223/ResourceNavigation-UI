@@ -41,6 +41,7 @@
     height="400px"
     :header-cell-style="{background:'#ddd'}"
     ref="userTableRef"
+    class="user-table"
   >
     <el-table-column type="selection" />
     <el-table-column
@@ -48,12 +49,11 @@
       label="用户名"
       sortable
       align="center"
-      width="100px"
+      width="150px"
     />
     <el-table-column
       prop="avatar"
       label="头像"
-      width="120px"
       align="center"
       sortable
     />
@@ -121,20 +121,20 @@
       </template>
     </el-table-column>
   </el-table>
-  <!-- <UserAdd
+  <UserAdd
     :dialog="dialog"
-    @listRoles="listRoles"
+    @listUsers="listUsers"
   />
   <UserEdit
     :dialog="dialog"
-    @listRoles="listRoles"
-    :roleUpdateRow="roleUpdateRow.data"
+    @listUsers="listUsers"
+    :userUpdateRow="userUpdateRow.data"
   />
   <AssignRole
     :dialog="dialog"
-    :roleId="assignRoleId.value"
+    :userId="assignRoleId.value"
     @changeDialogVisible="changeDialogVisible"
-  /> -->
+  />
 </template>
 
 <script>
@@ -142,9 +142,9 @@ import { reactive } from '@vue/reactivity'
 import { getCurrentInstance, inject } from '@vue/runtime-core'
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
-// import UserAdd from './UserAdd.vue';
-// import UserEdit from './UserEdit.vue';
-// import AssignRole from './AssignRole.vue'
+import UserAdd from './UserAdd.vue';
+import UserEdit from './UserEdit.vue';
+import AssignRole from './AssignRole.vue'
 import '@/assets/css/mainStyle.css'
 
 export default {
@@ -166,7 +166,7 @@ export default {
     let userUpdateRow = reactive({
       data: {}
     })
-    let assignUserId = reactive({
+    let assignRoleId = reactive({
       value: ''
     })
 
@@ -180,9 +180,8 @@ export default {
       axios.get('/resNav/user/listUsers').then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
-          console.log(response);
 
-          users.data.push.apply(users.data, response.data.data.data)
+          users.data.push.apply(users.data, response.data.data)
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -198,7 +197,7 @@ export default {
       let ids = row.id ? [row.id] : row
       ViewUIPlus.LoadingBar.start();
 
-      axios.delete('/resNav/role/deleteRole', { data: { ids: ids } }).then(response => {
+      axios.delete('/resNav/user/deleteUser', { data: { ids: ids } }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
           ElMessage({
@@ -219,7 +218,7 @@ export default {
     }
 
     function multipleDeleteUser() {
-      let ids = proxy.$refs.roleTableRef.getSelectionRows().map(select => select.id)
+      let ids = proxy.$refs.userTableRef.getSelectionRows().map(select => select.id)
 
       if (ids.length > 0) {
         deleteUser(ids)
@@ -238,7 +237,7 @@ export default {
 
     function assignRoles(row) {
       dialog.assignDialogVisible = true
-      assignUserId.value = row.id
+      assignRoleId.value = row.id
     }
 
     function changeDialogVisible() {
@@ -248,9 +247,10 @@ export default {
     return {
       users,
       userUpdateRow,
-      assignUserId,
+      assignRoleId,
       dialog,
       InfoFilled,
+
       deleteUser,
       multipleDeleteUser,
       updateUser,
@@ -260,9 +260,9 @@ export default {
     }
   },
   components: {
-    // UserAdd,
-    // UserEdit,
-    // AssignRole
+    UserAdd,
+    UserEdit,
+    AssignRole
   }
 }
 </script>

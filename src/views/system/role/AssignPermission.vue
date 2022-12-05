@@ -88,13 +88,14 @@ export default {
     function listMenusByRoleId() {
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/roleMenu/listMenusByRoleId', { params: { roleId: props.roleId } }).then(response => {
+      axios.get('/resNav/roleMenu/listMenusByRoleId/' + props.roleId).then(response => {
+        assignPermissionForm.strictly = false
+
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
           let checkedIds = response.data.data.map(menu => menu.id)
           proxy.$refs.assignMenusTreeRef.setCheckedKeys(checkedIds)
-          assignPermissionForm.strictly = false
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
