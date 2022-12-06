@@ -175,7 +175,7 @@ export default {
 .el-input {
   height: 40px;
 }
-:v-deep(.el-form-item__label) {
+:deep(.el-form-item__label) {
   color: black;
   font-weight: bold;
   font-size: 16px;
