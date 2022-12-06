@@ -135,7 +135,7 @@
           border
           stripe
           show-header
-          max-height="500px"
+          :max-height="tableMaxHeight"
           :header-cell-style="{background:'#ddd'}"
           ref="menuTableRef"
         >
@@ -276,7 +276,7 @@
 </template>
 
 <script>
-import { reactive } from '@vue/reactivity'
+import { reactive, ref } from '@vue/reactivity'
 import { getCurrentInstance, inject } from '@vue/runtime-core'
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
@@ -305,6 +305,7 @@ export default {
     let menuUpdateRow = reactive({
       data: {}
     })
+    let tableMaxHeight = ref(window.innerHeight - 320)
 
 
     function listMenusTree() {
@@ -381,6 +382,7 @@ export default {
 
     return {
       menuQueryForm,
+      tableMaxHeight,
       menusTree,
       listMenusTree,
       dialog,
@@ -402,7 +404,6 @@ export default {
 <style scoped>
 .el-col {
   margin: 0 auto;
-  min-width: 220px;
 }
 :deep(.query-form-inline .el-form-item__label) {
   font-weight: bold;

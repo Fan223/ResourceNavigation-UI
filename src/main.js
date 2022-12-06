@@ -5,12 +5,13 @@ import App from './App.vue'
 import router from '@/router'
 // VueX
 import store from '@/store'
-// 饿了么UI
+// Element UI
 import 'element-plus/dist/index.css'
 import ElementPlus from 'element-plus'
 import { ElMessage } from 'element-plus'
+// Element UI语言包
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
-// 饿了么UI 图标
+// Element UI图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // vue-axios
 import request from '@/axios'

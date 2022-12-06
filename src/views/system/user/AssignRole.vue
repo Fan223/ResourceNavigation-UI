@@ -68,11 +68,17 @@ export default {
       roles.data = []
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/role/listRoles', { params: { flag: 'Y' } }).then(response => {
+      axios.get('/resNav/role/pageRoles', {
+        params: {
+          flag: 'Y',
+          currentPage: 1,
+          pageSize: 50
+        }
+      }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          roles.data.push.apply(roles.data, response.data.data)
+          roles.data.push.apply(roles.data, response.data.data.records)
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({

@@ -56,9 +56,6 @@ export default {
   min-height: 520px;
   min-width: 520px;
 }
-.el-aside {
-  background-color: #001529;
-}
 .el-header {
   height: 50px;
   line-height: 50px;

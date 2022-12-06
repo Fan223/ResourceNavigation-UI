@@ -46,7 +46,6 @@ import { useStore } from 'vuex'
 import ViewUIPlus from 'view-ui-plus';
 import { useRouter } from 'vue-router';
 
-
 export default {
   name: 'HeaderMenu',
   setup() {
@@ -84,7 +83,7 @@ export default {
       Fold,
       Expand,
       logout,
-      changeCollapsed
+      changeCollapsed,
     }
   }
 }

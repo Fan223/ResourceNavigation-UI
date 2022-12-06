@@ -12,19 +12,19 @@
       >
         <h1>登录</h1>
         <el-form-item
-          label="用户名: "
+          label="用户名"
           prop="username"
         >
           <el-input v-model="loginForm.username" />
         </el-form-item>
         <el-form-item
-          label="密码: "
+          label="密码"
           prop="password"
         >
           <el-input v-model="loginForm.password" />
         </el-form-item>
         <el-form-item
-          label="验证码: "
+          label="验证码"
           prop="captcha"
         >
           <el-input
@@ -156,6 +156,8 @@ export default {
 
 <style scoped>
 .el-col {
+  background-image: url("@/assets/image/3.jpg");
+  background-size: 100% 100%;
   height: 100vh;
   min-height: 521px;
   min-width: 650px;
@@ -163,10 +165,12 @@ export default {
   align-items: center;
 }
 .el-form {
+  background-color: rgb(0, 0, 0, 0.4);
+  border-radius: 15px;
   height: 330px;
   width: 620px;
-  border: 1px solid red;
   margin: 0 auto;
+  padding-top: 20px;
   text-align: center;
 }
 .el-form-item {
@@ -176,7 +180,7 @@ export default {
   height: 40px;
 }
 :deep(.el-form-item__label) {
-  color: black;
+  color: #fff;
   font-weight: bold;
   font-size: 16px;
 }

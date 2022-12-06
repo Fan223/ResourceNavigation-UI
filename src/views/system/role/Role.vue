@@ -110,9 +110,8 @@
           row-key="id"
           border
           stripe
-          empty-text="加载中..."
           show-header
-          max-height="500px"
+          max-height="400px"
           :header-cell-style="{background:'#ddd'}"
           ref="roleTableRef"
         >
@@ -201,6 +200,15 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          class="data-pagination"
+          v-model:current-page="paginationForm.currentPage"
+          v-model:page-size="paginationForm.pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          background
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="paginationForm.total"
+        />
         <RoleAdd
           :dialog="dialog"
           @listRoles="listRoles"
@@ -222,7 +230,7 @@
 
 <script>
 import { reactive } from '@vue/reactivity'
-import { getCurrentInstance, inject } from '@vue/runtime-core'
+import { getCurrentInstance, inject, watch } from '@vue/runtime-core'
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
 import RoleAdd from './RoleAdd.vue';
@@ -240,6 +248,10 @@ export default {
 
     let roleQueryForm = reactive({
 
+    })
+    let paginationForm = reactive({
+      currentPage: 1,
+      pageSize: 10,
     })
     let roles = reactive({
       data: []
@@ -263,11 +275,20 @@ export default {
       roles.data = []
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/role/listRoles').then(response => {
+      axios.get('/resNav/role/pageRoles', {
+        params: {
+          flag: roleQueryForm.flag,
+          name: roleQueryForm.name,
+          code: roleQueryForm.code,
+          currentPage: paginationForm.currentPage,
+          pageSize: paginationForm.pageSize
+        }
+      }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          roles.data.push.apply(roles.data, response.data.data)
+          roles.data.push.apply(roles.data, response.data.data.records)
+          paginationForm.total = response.data.data.total
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -278,6 +299,11 @@ export default {
       })
     }
     listRoles();
+
+    watch([() => paginationForm.currentPage, () => paginationForm.pageSize], () => {
+      listRoles()
+    })
+
 
     function deleteRole(row) {
       let ids = row.id ? [row.id] : row
@@ -332,6 +358,7 @@ export default {
 
     return {
       roleQueryForm,
+      paginationForm,
       roles,
       roleUpdateRow,
       assignRoleId,
@@ -357,7 +384,6 @@ export default {
 <style scoped>
 .el-col {
   margin: 0 auto;
-  min-width: 220px;
 }
 :deep(.query-form-inline .el-form-item__label) {
   font-weight: bold;
