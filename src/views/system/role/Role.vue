@@ -1,146 +1,223 @@
 <template>
+  <!-- 查询区域 -->
   <el-row>
-    <el-col :span="6">
-      <b>角色管理</b>
-    </el-col>
-    <el-col :span="18">
-      <div class="main-header-button">
-        <el-button
-          v-if="hasAuth('role:add')"
-          type="primary"
-          size="small"
-          @click="dialog.addDialogVisible = true"
-        >新增</el-button>
-        <el-popconfirm
-          v-if="hasAuth('role:delete')"
-          confirm-button-text="确定"
-          cancel-button-text="取消"
-          title="确定删除吗?"
-          :icon="InfoFilled"
-          icon-color="#626AEF"
-          @confirm="multipleDeleteRole"
+    <el-col :span="24">
+      <el-form
+        class="query-form-inline"
+        label-position="right"
+        label-width="70px"
+        :model="roleQueryForm"
+        ref="roleQueryFormRef"
+        :inline="true"
+        @keyup.enter="listRoles"
+      >
+        <el-form-item
+          label="角色名称"
+          prop="name"
         >
-          <template #reference>
-            <el-button
-              type="danger"
-              size="small"
-            >批量删除</el-button>
-          </template>
-        </el-popconfirm>
-      </div>
+          <el-input
+            v-model="roleQueryForm.name"
+            placeholder="请输入名称"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item
+          label="角色编码"
+          prop="code"
+        >
+          <el-input
+            v-model="roleQueryForm.code"
+            placeholder="请输入角色编码"
+            clearable
+          />
+        </el-form-item>
+        <el-form-item
+          label="状态"
+          prop="flag"
+        >
+          <el-select
+            v-model="roleQueryForm.flag"
+            placeholder="请选择状态"
+            clearable
+          >
+            <el-option
+              label="正常"
+              value="Y"
+            />
+            <el-option
+              label="禁用"
+              value="N"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="query-form-inline-button">
+          <el-button
+            size="small"
+            type="primary"
+            @click="listRoles"
+          >查询
+          </el-button>
+          <el-button @click="() => this.$refs.roleQueryFormRef.resetFields()">重置
+          </el-button>
+        </el-form-item>
+      </el-form>
     </el-col>
   </el-row>
 
-  <el-table
-    :data="roles.data"
-    row-key="id"
-    border
-    stripe
-    empty-text="加载中..."
-    show-header
-    height="400px"
-    :header-cell-style="{background:'#ddd'}"
-    ref="roleTableRef"
-  >
-    <el-table-column type="selection" />
-    <el-table-column
-      prop="name"
-      label="名称"
-      sortable
-      align="center"
-      width="100px"
-    />
-    <el-table-column
-      prop="code"
-      label="角色编码"
-      width="120px"
-      align="center"
-      sortable
-    />
-    <el-table-column
-      prop="flag"
-      label="状态"
-      align="center"
-      width="100px"
-    >
-      <template #default="scope">
-        <el-tag
-          v-if="scope.row.flag === 'N'"
-          size="small"
-          type="danger"
-        >禁用</el-tag>
-        <el-tag
-          v-else-if="scope.row.flag === 'Y'"
-          size="small"
-          type="success"
-        >正常</el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column
-      prop="remark"
-      label="备注"
-      align="center"
-    />
-    <el-table-column
-      prop="createTime"
-      label="创建时间"
-      sortable
-      align="center"
-      width="180px"
-    />
-    <el-table-column
-      v-if="hasAuth('roleMenu:assignPermission') || hasAuth('role:update') || hasAuth('role:delete')"
-      label="操作"
-      align="center"
-      width="240px"
-      fixed="right"
-    >
-      <template #default="scope">
-        <el-button
-          v-if="hasAuth('roleMenu:assignPermission') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
-          type="primary"
-          size="small"
-          @click="assignPermissions(scope.row)"
-        >分配权限</el-button>
-        <el-button
-          v-if="hasAuth('role:update') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
-          type="primary"
-          size="small"
-          @click="updateRole(scope.row)"
-        >编辑</el-button>
-        <el-popconfirm
-          v-if="hasAuth('role:delete') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
-          confirm-button-text="确定"
-          cancel-button-text="取消"
-          title="确定删除吗?"
-          :icon="InfoFilled"
-          icon-color="#626AEF"
-          @confirm="deleteRole(scope.row)"
+  <!-- 结果区域 -->
+  <div class="data-content">
+    <el-row class="data-content-header">
+      <el-col
+        :span="6"
+        class="data-content-header-text"
+      >
+        <b>查询结果</b>
+      </el-col>
+      <el-col :span="18">
+        <div class="data-content-header-button">
+          <el-button
+            v-if="hasAuth('role:add')"
+            type="primary"
+            size="small"
+            @click="dialog.addDialogVisible = true"
+          >新增</el-button>
+          <el-popconfirm
+            v-if="hasAuth('menu:delete')"
+            confirm-button-text="确定"
+            cancel-button-text="取消"
+            title="确定删除吗?"
+            :icon="InfoFilled"
+            icon-color="#626AEF"
+            @confirm="multipleDeleteRole"
+          >
+            <template #reference>
+              <el-button
+                type="danger"
+                size="small"
+              >批量删除</el-button>
+            </template>
+          </el-popconfirm>
+        </div>
+      </el-col>
+    </el-row>
+
+    <!-- 数据 -->
+    <el-row>
+      <el-col :span="23">
+        <el-table
+          class="data-content-table"
+          :data="roles.data"
+          row-key="id"
+          border
+          stripe
+          empty-text="加载中..."
+          show-header
+          max-height="500px"
+          :header-cell-style="{background:'#ddd'}"
+          ref="roleTableRef"
         >
-          <template #reference>
-            <el-button
-              type="danger"
-              size="small"
-            >删除</el-button>
-          </template>
-        </el-popconfirm>
-      </template>
-    </el-table-column>
-  </el-table>
-  <RoleAdd
-    :dialog="dialog"
-    @listRoles="listRoles"
-  />
-  <RoleEdit
-    :dialog="dialog"
-    @listRoles="listRoles"
-    :roleUpdateRow="roleUpdateRow.data"
-  />
-  <AssignPermission
-    :dialog="dialog"
-    :roleId="assignRoleId.value"
-    @changeDialogVisible="changeDialogVisible"
-  />
+          <el-table-column type="selection" />
+          <el-table-column
+            prop="name"
+            label="名称"
+            sortable
+            align="center"
+            min-width="160px"
+          />
+          <el-table-column
+            prop="code"
+            label="角色编码"
+            min-width="120px"
+            align="center"
+            sortable
+          />
+          <el-table-column
+            prop="flag"
+            label="状态"
+            align="center"
+          >
+            <template #default="scope">
+              <el-tag
+                v-if="scope.row.flag === 'N'"
+                size="small"
+                type="danger"
+              >禁用</el-tag>
+              <el-tag
+                v-else-if="scope.row.flag === 'Y'"
+                size="small"
+                type="success"
+              >正常</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="remark"
+            label="备注"
+            align="center"
+            min-width="240px"
+          />
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            sortable
+            align="center"
+            min-width="180px"
+          />
+          <el-table-column
+            v-if="hasAuth('roleMenu:assignPermission') || hasAuth('role:update') || hasAuth('role:delete')"
+            label="操作"
+            align="center"
+            min-width="240px"
+            fixed="right"
+          >
+            <template #default="scope">
+              <el-button
+                v-if="hasAuth('roleMenu:assignPermission') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
+                type="primary"
+                size="small"
+                @click="assignPermissions(scope.row)"
+              >分配权限</el-button>
+              <el-button
+                v-if="hasAuth('role:update') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
+                type="primary"
+                size="small"
+                @click="updateRole(scope.row)"
+              >编辑</el-button>
+              <el-popconfirm
+                v-if="hasAuth('role:delete') && (hasAuth('ROLE_root') || (scope.row.id !== 'root' && scope.row.id !== 'base'))"
+                confirm-button-text="确定"
+                cancel-button-text="取消"
+                title="确定删除吗?"
+                :icon="InfoFilled"
+                icon-color="#626AEF"
+                @confirm="deleteRole(scope.row)"
+              >
+                <template #reference>
+                  <el-button
+                    type="danger"
+                    size="small"
+                  >删除</el-button>
+                </template>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+        <RoleAdd
+          :dialog="dialog"
+          @listRoles="listRoles"
+        />
+        <RoleEdit
+          :dialog="dialog"
+          @listRoles="listRoles"
+          :roleUpdateRow="roleUpdateRow.data"
+        />
+        <AssignPermission
+          :dialog="dialog"
+          :roleId="assignRoleId.value"
+          @changeDialogVisible="changeDialogVisible"
+        />
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>
@@ -161,6 +238,9 @@ export default {
     const { proxy } = getCurrentInstance()
     const ElMessage = inject('ElMessage')
 
+    let roleQueryForm = reactive({
+
+    })
     let roles = reactive({
       data: []
     })
@@ -251,6 +331,7 @@ export default {
     }
 
     return {
+      roleQueryForm,
       roles,
       roleUpdateRow,
       assignRoleId,
@@ -274,7 +355,15 @@ export default {
 </script>
 
 <style scoped>
-.el-table {
-  margin-top: 3px;
+.el-col {
+  margin: 0 auto;
+  min-width: 220px;
+}
+:deep(.query-form-inline .el-form-item__label) {
+  font-weight: bold;
+}
+.el-select,
+.el-input {
+  width: 200px;
 }
 </style>

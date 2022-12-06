@@ -9,6 +9,7 @@ import store from '@/store'
 import 'element-plus/dist/index.css'
 import ElementPlus from 'element-plus'
 import { ElMessage } from 'element-plus'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 // 饿了么UI 图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 // vue-axios
@@ -32,7 +33,7 @@ app.mixin(mixin)
 
 app.use(store)
   .use(router)
-  .use(ElementPlus)
+  .use(ElementPlus, { locale: zhCn })
   .use(VueAxios, request)
   .mount('#app')
 

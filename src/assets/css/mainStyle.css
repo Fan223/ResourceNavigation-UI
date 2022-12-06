@@ -1,4 +1,25 @@
-.main-header-button {
+.query-form-inline {
+  margin-left: 15px;
+}
+.query-form-inline-button {
   float: right;
-  margin-right: 40px;
+}
+.data-content {
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 0 5px grey;
+}
+.data-content-header {
+  padding-top: 10px;
+}
+.data-content-header-text {
+  padding-left: 10px;
+}
+.data-content-header-button {
+  float: right;
+  margin-right: 30px;
+}
+.data-content-table {
+  margin-top: 3px;
+  margin-bottom: 20px;
 }

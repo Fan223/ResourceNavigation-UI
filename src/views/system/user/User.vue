@@ -41,7 +41,6 @@
     height="400px"
     :header-cell-style="{background:'#ddd'}"
     ref="userTableRef"
-    class="user-table"
   >
     <el-table-column type="selection" />
     <el-table-column
@@ -49,7 +48,7 @@
       label="用户名"
       sortable
       align="center"
-      width="150px"
+      min-width="160px"
     />
     <el-table-column
       prop="avatar"
@@ -61,7 +60,6 @@
       prop="flag"
       label="状态"
       align="center"
-      width="100px"
     >
       <template #default="scope">
         <el-tag
@@ -81,13 +79,13 @@
       label="创建时间"
       sortable
       align="center"
-      width="180px"
+      min-width="180px"
     />
     <el-table-column
       v-if="hasAuth('user:update') || hasAuth('user:delete')"
       label="操作"
       align="center"
-      width="240px"
+      min-width="240px"
       fixed="right"
     >
       <template #default="scope">
