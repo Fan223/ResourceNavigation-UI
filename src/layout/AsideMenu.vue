@@ -1,13 +1,16 @@
 <template>
   <el-menu
-    :collapse="this.$store.state.isCollapsed"
+    background-color="#001529"
+    text-color="#fff"
     active-text-color="#ffd04b"
+    :collapse="this.$store.state.isCollapsed"
     :default-active="this.$store.state.menu.activeTabName"
   >
 
     <el-menu-item
       index="Title"
       @click="this.$router.go(0)"
+      style="background-color: #002140"
     >
       <el-icon>
         <Menu />
@@ -40,6 +43,9 @@ export default {
 </script>
 
 <style scoped>
+.el-menu {
+  border: none;
+}
 .el-menu:not(.el-menu--collapse) {
   width: 200px;
   height: 100%;

@@ -1,5 +1,5 @@
 <template>
-  <span class="footer">Copyright © 2022 凡（Fan223）</span>
+  <span class="footer">Copyright © 2022 凡( Fan223 )</span>
 </template>
 
 <script>

@@ -111,7 +111,7 @@
           border
           stripe
           show-header
-          max-height="400px"
+          :max-height="tableMaxHeight"
           :header-cell-style="{background:'#ddd'}"
           ref="roleTableRef"
         >
@@ -229,7 +229,7 @@
 </template>
 
 <script>
-import { reactive } from '@vue/reactivity'
+import { reactive, ref } from '@vue/reactivity'
 import { getCurrentInstance, inject, watch } from '@vue/runtime-core'
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
@@ -267,12 +267,12 @@ export default {
     let assignRoleId = reactive({
       value: ''
     })
+    let tableMaxHeight = ref(window.innerHeight - 310)
 
 
     function listRoles() {
       dialog.addDialogVisible = false
       dialog.editDialogVisible = false
-      roles.data = []
       ViewUIPlus.LoadingBar.start();
 
       axios.get('/resNav/role/pageRoles', {
@@ -287,6 +287,7 @@ export default {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
+          roles.data = []
           roles.data.push.apply(roles.data, response.data.data.records)
           paginationForm.total = response.data.data.total
         } else {
@@ -364,6 +365,7 @@ export default {
       assignRoleId,
       dialog,
       InfoFilled,
+      tableMaxHeight,
 
       deleteRole,
       multipleDeleteRole,

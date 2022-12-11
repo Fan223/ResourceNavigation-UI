@@ -22,7 +22,6 @@
           :props="{ label: 'name', children: 'children' }"
           node-key="id"
           :check-strictly="assignPermissionForm.strictly"
-          empty-text="加载中..."
           highlight-current
           default-expand-all
           ref="assignMenusTreeRef"
@@ -47,6 +46,7 @@
 <script>
 import { getCurrentInstance, inject, reactive } from '@vue/runtime-core'
 import ViewUIPlus from 'view-ui-plus';
+import { useStore } from 'vuex';
 
 export default {
   name: 'AssignPermission',
@@ -55,6 +55,7 @@ export default {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
+    const store = useStore()
 
 
     let assignMenusTree = reactive({
@@ -66,13 +67,13 @@ export default {
     })
 
     function listMenusTree() {
-      assignMenusTree.data = []
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/menu/listMenusTree', { params: { flag: 'Y', type: 0 } }).then(response => {
+      axios.get('/resNav/menu/listMenusTree', { params: { flag: 'Y' } }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
+          assignMenusTree.data = []
           assignMenusTree.data.push.apply(assignMenusTree.data, response.data.data)
         } else {
           ViewUIPlus.LoadingBar.error();
@@ -83,7 +84,9 @@ export default {
         }
       })
     }
-    listMenusTree()
+    if (store.state.menu.authorities.indexOf('roleMenu:assignPermission') > -1) {
+      listMenusTree();
+    }
 
     function listMenusByRoleId() {
       ViewUIPlus.LoadingBar.start();
@@ -94,8 +97,7 @@ export default {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          let checkedIds = response.data.data.map(menu => menu.id)
-          proxy.$refs.assignMenusTreeRef.setCheckedKeys(checkedIds)
+          proxy.$refs.assignMenusTreeRef.setCheckedKeys(response.data.data)
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({

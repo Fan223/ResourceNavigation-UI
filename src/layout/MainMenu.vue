@@ -2,7 +2,7 @@
   <!-- 主布局 -->
   <el-container class="layout">
 
-    <!-- 侧边栏和（顶部、主体） -->
+    <!-- 侧边栏和( 顶部、主体 ) -->
     <el-container>
 
       <!-- 侧边栏 -->
@@ -19,24 +19,24 @@
         <el-header height="50px">
           <HeaderMenu />
         </el-header>
+        <Tabs />
         <el-main>
-          <Tabs />
           <router-view> </router-view>
         </el-main>
       </el-container>
     </el-container>
 
     <!-- 底部 -->
-    <el-footer height="25px">
+    <!-- <el-footer height="25px">
       <FooterMenu />
-    </el-footer>
+    </el-footer> -->
   </el-container>
 </template>
 
 <script>
 import AsideMenu from './AsideMenu.vue';
 import HeaderMenu from './HeaderMenu.vue';
-import FooterMenu from './FooterMenu.vue';
+// import FooterMenu from './FooterMenu.vue';
 import Tabs from './Tabs.vue';
 
 export default {
@@ -44,7 +44,7 @@ export default {
   components: {
     AsideMenu,
     HeaderMenu,
-    FooterMenu,
+    // FooterMenu,
     Tabs
   },
 }
@@ -59,16 +59,19 @@ export default {
 .el-header {
   height: 50px;
   line-height: 50px;
-  background-color: #fff;
-  border-bottom: 1px solid #ccc;
   padding: 0;
+}
+.el-tabs {
+  height: 41px;
+  border-top: 1px solid #ddd;
 }
 .el-main {
   padding: 0;
+  background-color: #f0f2f5;
 }
-.el-footer {
+/* .el-footer {
   text-align: center;
-  background: skyblue;
+  background-color: #002140;
   color: white;
-}
+} */
 </style>

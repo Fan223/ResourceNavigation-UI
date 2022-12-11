@@ -60,20 +60,23 @@ router.beforeEach((to, from ,next) => {
       store.commit('SET_MENUS', response.data.data.menus);
       // 拿到 authorities 权限列表
       store.commit('SET_AUTHORITIES', response.data.data.authorities);
-  
-      // 动态绑定路由
-      response.data.data.menus.forEach(menu => {
-        if (menu.children && menu.children.length > 0) {
-          transToRouter(menu)
-        } else {
-          let route = menuToRouter(menu);
-          if (route) {
-            router.addRoute('Root', route);
-          }
-        }
-      });
 
-      store.commit('CHANGE_ROUTE_STATUS', true);
+      if(response.data.data.menus) {
+        // 动态绑定路由
+        response.data.data.menus.forEach(menu => {
+          if (menu.children && menu.children.length > 0) {
+            transToRouter(menu)
+          } else {
+            let route = menuToRouter(menu);
+            if (route) {
+              router.addRoute('Root', route);
+            }
+          }
+        });
+
+        store.commit('CHANGE_ROUTE_STATUS', true);
+      }
+
       next(to.path)
     })
   } else {

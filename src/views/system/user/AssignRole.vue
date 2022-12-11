@@ -48,6 +48,7 @@
 <script>
 import { getCurrentInstance, inject, reactive } from '@vue/runtime-core'
 import ViewUIPlus from 'view-ui-plus';
+import { useStore } from 'vuex';
 
 export default {
   name: 'AssignRole',
@@ -56,6 +57,7 @@ export default {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
     const { proxy } = getCurrentInstance()
+    const store = useStore()
 
     let roles = reactive({
       data: []
@@ -68,17 +70,15 @@ export default {
       roles.data = []
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/role/pageRoles', {
+      axios.get('/resNav/role/listRoles', {
         params: {
-          flag: 'Y',
-          currentPage: 1,
-          pageSize: 50
+          flag: 'Y'
         }
       }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          roles.data.push.apply(roles.data, response.data.data.records)
+          roles.data.push.apply(roles.data, response.data.data)
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({
@@ -88,7 +88,9 @@ export default {
         }
       })
     }
-    listRoles();
+    if (store.state.menu.authorities.indexOf('userRole:assignRole') > -1) {
+      listRoles();
+    }
 
     function listRolesByUserId() {
       ViewUIPlus.LoadingBar.start();
@@ -97,8 +99,7 @@ export default {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          let roleIds = response.data.data.map(role => role.id)
-          assignRoleForm.roleIds = roleIds
+          assignRoleForm.roleIds = response.data.data
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({

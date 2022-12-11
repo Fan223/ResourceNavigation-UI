@@ -100,7 +100,7 @@
           border
           stripe
           show-header
-          height="400px"
+          :max-height="tableMaxHeight"
           :header-cell-style="{background:'#ddd'}"
           ref="userTableRef"
         >
@@ -152,6 +152,7 @@
           >
             <template #default="scope">
               <el-button
+                v-if="hasAuth('userRole:assignRole')"
                 type="primary"
                 size="small"
                 @click="assignRoles(scope.row)"
@@ -210,7 +211,7 @@
 </template>
 
 <script>
-import { reactive } from '@vue/reactivity'
+import { reactive, ref } from '@vue/reactivity'
 import { getCurrentInstance, inject, watch } from '@vue/runtime-core'
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
@@ -247,12 +248,12 @@ export default {
     let assignRoleId = reactive({
       value: ''
     })
+    let tableMaxHeight = ref(window.innerHeight - 310)
 
 
     function listUsers() {
       dialog.addDialogVisible = false
       dialog.editDialogVisible = false
-      users.data = []
       ViewUIPlus.LoadingBar.start();
 
       axios.get('/resNav/user/pageUsers', {
@@ -266,6 +267,7 @@ export default {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
+          users.data = []
           users.data.push.apply(users.data, response.data.data.records)
           paginationForm.total = response.data.data.total
         } else {
@@ -342,6 +344,7 @@ export default {
       assignRoleId,
       dialog,
       InfoFilled,
+      tableMaxHeight,
 
       deleteUser,
       multipleDeleteUser,

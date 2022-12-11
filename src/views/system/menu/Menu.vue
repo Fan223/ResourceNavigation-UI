@@ -131,10 +131,11 @@
         <el-table
           class="data-content-table"
           :data="menusTree.data"
-          row-key="id"
+          row-key="permission"
           border
           stripe
           show-header
+          :expand-row-keys="['system']"
           :max-height="tableMaxHeight"
           :header-cell-style="{background:'#ddd'}"
           ref="menuTableRef"
@@ -305,13 +306,12 @@ export default {
     let menuUpdateRow = reactive({
       data: {}
     })
-    let tableMaxHeight = ref(window.innerHeight - 320)
+    let tableMaxHeight = ref(window.innerHeight - 310)
 
 
     function listMenusTree() {
       dialog.addDialogVisible = false
       dialog.editDialogVisible = false
-      menusTree.data = []
       ViewUIPlus.LoadingBar.start();
 
       let queryForm = Qs.stringify({
@@ -325,6 +325,7 @@ export default {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
+          menusTree.data = []
           menusTree.data.push.apply(menusTree.data, response.data.data)
         } else {
           ViewUIPlus.LoadingBar.error();
@@ -404,6 +405,9 @@ export default {
 <style scoped>
 .el-col {
   margin: 0 auto;
+}
+.el-table {
+  margin-bottom: 30px;
 }
 :deep(.query-form-inline .el-form-item__label) {
   font-weight: bold;
