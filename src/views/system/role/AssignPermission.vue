@@ -91,7 +91,7 @@ export default {
     function listMenusByRoleId() {
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/roleMenu/listMenusByRoleId/' + props.roleId).then(response => {
+      axios.get('/resNav/roleMenu/listMenuIds/' + props.roleId).then(response => {
         assignPermissionForm.strictly = false
 
         if (response.data.code === 200) {

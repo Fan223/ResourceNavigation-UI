@@ -55,7 +55,7 @@ router.beforeEach((to, from ,next) => {
     })
     next('/login')
   } else if (!hasRoute){
-    axios.get('/resNav/auth/listNavMenus').then(response => {
+    axios.get('/resNav/menu/listNavMenus').then(response => {
       // 拿到 menus 菜单列表
       store.commit('SET_MENUS', response.data.data.menus);
       // 拿到 authorities 权限列表

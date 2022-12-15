@@ -21,7 +21,10 @@
           label="密码"
           prop="password"
         >
-          <el-input v-model="loginForm.password" />
+          <el-input
+            type="password"
+            v-model="loginForm.password"
+          />
         </el-form-item>
         <el-form-item
           label="验证码"
@@ -35,8 +38,7 @@
             :src="captchaImg"
             @click="getCaptcha"
             style="margin-left: 25px"
-          >
-          </el-image>
+          />
         </el-form-item>
 
         <el-form-item

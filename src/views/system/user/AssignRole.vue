@@ -95,7 +95,7 @@ export default {
     function listRolesByUserId() {
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/userRole/listRolesByUserId/' + props.userId).then(response => {
+      axios.get('/resNav/userRole/listRoleIds/' + props.userId, { params: { flag: 'Y' } }).then(response => {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
