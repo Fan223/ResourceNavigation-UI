@@ -15,7 +15,7 @@
       <el-icon>
         <Menu />
       </el-icon>
-      <template #title>Root</template>
+      <template #title>后台管理系统</template>
     </el-menu-item>
 
     <router-link to="/home">
