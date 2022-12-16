@@ -81,8 +81,8 @@ export default {
 
     // 登录表单
     let loginForm = reactive({
-      username: 'fan',
-      password: 'fan223',
+      username: '',
+      password: '',
       captcha: '',
       loginToken: ''
     });
