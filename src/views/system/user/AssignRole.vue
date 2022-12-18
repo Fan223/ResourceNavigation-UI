@@ -6,7 +6,7 @@
     destroy-on-close
     :close-on-click-modal="false"
     align-center
-    @open="listRolesByUserId"
+    @open="assignRoleIds"
     @close="this.$refs.assignRoleFormRef.resetFields()"
   >
 
@@ -14,7 +14,7 @@
       :model="assignRoleForm"
       ref="assignRoleFormRef"
     >
-      <el-form-item>
+      <el-form-item prop="roleIds">
         <el-select
           placeholder="请选择角色"
           v-model="assignRoleForm.roleIds"
@@ -52,7 +52,7 @@ import { useStore } from 'vuex';
 
 export default {
   name: 'AssignRole',
-  props: ['dialog', 'userId'],
+  props: ['dialog', 'userId', 'roleIds'],
   setup(props, context) {
     const axios = inject('axios')
     const ElMessage = inject('ElMessage')
@@ -92,22 +92,8 @@ export default {
       listRoles();
     }
 
-    function listRolesByUserId() {
-      ViewUIPlus.LoadingBar.start();
-
-      axios.get('/resNav/userRole/listRoleIds/' + props.userId, { params: { flag: 'Y' } }).then(response => {
-        if (response.data.code === 200) {
-          ViewUIPlus.LoadingBar.finish();
-
-          assignRoleForm.roleIds = response.data.data
-        } else {
-          ViewUIPlus.LoadingBar.error();
-          ElMessage({
-            message: response.data.msg,
-            type: 'error'
-          })
-        }
-      })
+    function assignRoleIds() {
+      assignRoleForm.roleIds = props.roleIds
     }
 
     function assignRoles() {
@@ -119,7 +105,7 @@ export default {
             type: 'success'
           })
 
-          context.emit('changeDialogVisible')
+          context.emit('listUsers')
           proxy.refreshNavMenus()
         } else {
           ViewUIPlus.LoadingBar.error()
@@ -134,7 +120,7 @@ export default {
     return {
       props,
       roles,
-      listRolesByUserId,
+      assignRoleIds,
       assignRoleForm,
       assignRoles
     }

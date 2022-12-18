@@ -110,8 +110,26 @@
             label="用户名"
             sortable
             align="center"
-            min-width="160px"
+            min-width="120px"
           />
+          <el-table-column
+            prop="roleNames"
+            label="角色"
+            sortable
+            align="center"
+            min-width="180px"
+          >
+            <template #default="scope">
+              <el-tag
+                v-for="roleName in scope.row.roleNames"
+                :key="roleName"
+                size="small"
+                type="info"
+              >
+                {{ roleName }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="avatar"
             label="头像"
@@ -202,8 +220,9 @@
         />
         <AssignRole
           :dialog="dialog"
-          :userId="assignRoleId.value"
-          @changeDialogVisible="changeDialogVisible"
+          :userId="assignRole.id"
+          :roleIds="assignRole.roleIds"
+          @listUsers="listUsers"
         />
       </el-col>
     </el-row>
@@ -245,8 +264,9 @@ export default {
     let userUpdateRow = reactive({
       data: {}
     })
-    let assignRoleId = reactive({
-      value: ''
+    let assignRole = reactive({
+      id: '',
+      roleIds: []
     })
     let tableMaxHeight = ref(window.innerHeight - 310)
 
@@ -254,6 +274,7 @@ export default {
     function listUsers() {
       dialog.addDialogVisible = false
       dialog.editDialogVisible = false
+      dialog.assignDialogVisible = false
       ViewUIPlus.LoadingBar.start();
 
       axios.get('/resNav/user/pageUsers', {
@@ -329,11 +350,8 @@ export default {
 
     function assignRoles(row) {
       dialog.assignDialogVisible = true
-      assignRoleId.value = row.id
-    }
-
-    function changeDialogVisible() {
-      dialog.assignDialogVisible = false
+      assignRole.id = row.id,
+        assignRole.roleIds = row.roleIds
     }
 
     return {
@@ -341,7 +359,7 @@ export default {
       paginationForm,
       users,
       userUpdateRow,
-      assignRoleId,
+      assignRole,
       dialog,
       InfoFilled,
       tableMaxHeight,
@@ -351,7 +369,6 @@ export default {
       updateUser,
       listUsers,
       assignRoles,
-      changeDialogVisible
     }
   },
   components: {
