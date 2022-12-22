@@ -46,7 +46,7 @@ const router = createRouter({
 router.beforeEach((to, from ,next) => {
   let hasRoute = store.state.menu.hasRoute;
 
-  if (to.path === '/login') {
+  if (to.path === '/login' || to.path === '/index') {
     next()
   } else if(!localStorage.getItem('JWT')) {
     ElMessage({

@@ -1,41 +1,51 @@
 <template>
-  <Tabs>
-    <template
-      v-for="(category) in categorys"
-      :key="category.label"
+  <el-tabs
+    v-model="activeName"
+    class="demo-tabs"
+    @tab-click="handleClick"
+  >
+    <el-tab-pane
+      label="User"
+      name="first"
     >
-      <TabPane
-        :label=category.label
-        :icon=category.icon
-      >
-        <template
-          v-for="fit in category.value"
-          :key="fit"
-        >
-          <Row
-            class="ivu-text-center"
-            :gutter="24"
-          >
-            <Col flex="1">
-            <Image src="https://file.iviewui.com/images/image-demo-13.jpg" />
-            <Paragraph class="ivu-mt">默认</Paragraph>
-            </Col>
-            <Col flex="1">
-            <Image src="https://file.iviewui.com/images/image-demo-13.jpg">
-              <template #placeholder>
-                <Spin
-                  size="large"
-                  fix
+      <el-carousel indicator-position="outside">
+        <el-carousel-item>
+          <el-row>
+            <el-col
+              :offset="2"
+              :span="4"
+            >
+              <div>
+                <el-image
+                  style="width: 100px; height: 100px"
+                  :src="info.url"
                 />
-              </template>
-            </Image>
-            <Paragraph class="ivu-mt">自定义</Paragraph>
-            </Col>
-          </Row>
-        </template>
-      </TabPane>
-    </template>
-  </Tabs>
+                <h4>MVN Repository</h4>
+              </div>
+            </el-col>
+            <el-col :span="4">
+              <el-image
+                style="width: 100px; height: 100px"
+                :src="info.url"
+              />
+            </el-col>
+          </el-row>
+        </el-carousel-item>
+      </el-carousel>
+    </el-tab-pane>
+    <el-tab-pane
+      label="Config"
+      name="second"
+    >Config</el-tab-pane>
+    <el-tab-pane
+      label="Role"
+      name="third"
+    >Role</el-tab-pane>
+    <el-tab-pane
+      label="Task"
+      name="fourth"
+    >Task</el-tab-pane>
+  </el-tabs>
 </template>
 
 <script>
@@ -44,27 +54,22 @@ export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Index',
   setup() {
-    let categorys = reactive([
-      {
-        label: 'macOS',
-        icon: 'logo-apple',
-        value: ['fill', 'contain', 'cover', 'none', 'scale-down']
-      },
-      {
-        label: 'Windows',
-        icon: 'logo-windows',
-        value: ['fill', 'contain', 'cover', 'none', 'scale-down']
-      },
-    ])
-    let url = 'https://file.iviewui.com/images/image-demo-11.jpg'
+    let info = reactive({
+      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+    })
 
     return {
-      categorys,
-      url
+      info
     }
   }
 }
 </script>
 
 <style>
+.el-tabs {
+  border: 1px solid red;
+  margin: 10% auto;
+  width: 80%;
+  height: 60vh;
+}
 </style>
