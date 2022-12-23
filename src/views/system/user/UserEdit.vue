@@ -93,7 +93,7 @@ export default {
             type: 'success'
           })
 
-          context.emit('listUsers')
+          context.emit('pageUsers')
         } else {
           ViewUIPlus.LoadingBar.error();
           ElMessage({

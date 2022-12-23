@@ -1,75 +1,140 @@
 <template>
-  <el-tabs
-    v-model="activeName"
-    class="demo-tabs"
-    @tab-click="handleClick"
-  >
-    <el-tab-pane
-      label="User"
-      name="first"
+  <div class="content">
+    <el-tabs
+      v-model="activeTabId"
+      @tab-change="listResources"
     >
-      <el-carousel indicator-position="outside">
-        <el-carousel-item>
-          <el-row>
-            <el-col
-              :offset="2"
-              :span="4"
+      <el-tab-pane
+        v-for="category in categorys.data"
+        :key="category.id"
+        :label="category.name"
+        :name="category.id"
+      >
+        <el-carousel
+          indicator-position="outside"
+          :interval="10000"
+        >
+          <el-carousel-item
+            v-for="resource in resources.data"
+            :key="resource"
+          >
+            <div
+              v-for="res in resource"
+              :key="res.id"
+              class="res-item"
             >
-              <div>
-                <el-image
-                  style="width: 100px; height: 100px"
-                  :src="info.url"
-                />
-                <h4>MVN Repository</h4>
+              <div @click="openUrl(res.url)">
+                <el-image :src="require('@/assets/images/icon/' + res.icon)" />
+                <h4> {{res.name}} </h4>
               </div>
-            </el-col>
-            <el-col :span="4">
-              <el-image
-                style="width: 100px; height: 100px"
-                :src="info.url"
-              />
-            </el-col>
-          </el-row>
-        </el-carousel-item>
-      </el-carousel>
-    </el-tab-pane>
-    <el-tab-pane
-      label="Config"
-      name="second"
-    >Config</el-tab-pane>
-    <el-tab-pane
-      label="Role"
-      name="third"
-    >Role</el-tab-pane>
-    <el-tab-pane
-      label="Task"
-      name="fourth"
-    >Task</el-tab-pane>
-  </el-tabs>
+            </div>
+          </el-carousel-item>
+        </el-carousel>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 
 <script>
-import { reactive } from '@vue/reactivity'
+import { reactive, ref } from '@vue/reactivity'
+import { inject } from '@vue/runtime-core'
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Index',
   setup() {
-    let info = reactive({
-      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+    const axios = inject('axios');
+
+    let resources = reactive({
+      data: []
     })
+    let categorys = reactive({
+      data: []
+    })
+    let activeTabId = ref('')
+
+    function listCategorys() {
+      categorys.data = []
+
+      axios.get('/resNav/api/listCategorys').then(response => {
+        categorys.data.push.apply(categorys.data, response.data.data)
+        activeTabId.value = categorys.data[0].id;
+      });
+    }
+    listCategorys();
+
+    function listResources(activeTabId) {
+      resources.data = []
+
+      axios.get('/resNav/api/listResources', {
+        params: {
+          categoryId: activeTabId
+        }
+      }).then(response => {
+        let size = 8
+        for (let i = 0; i < Math.ceil(response.data.data.length / size); i++) {
+          let start = i * size
+          let end = start + size
+          resources.data.push(response.data.data.slice(start, end))
+        }
+      });
+    }
+
+    function openUrl(url) {
+      window.open(url, '_blank')
+    }
 
     return {
-      info
+      resources,
+      categorys,
+      activeTabId,
+
+      listResources,
+      openUrl
     }
   }
 }
 </script>
 
 <style>
+.content {
+  background-image: url("@/assets/images/background.jpg");
+  background-size: 100% 100%;
+  height: 100vh;
+  border: 0.1px solid black;
+}
 .el-tabs {
-  border: 1px solid red;
-  margin: 10% auto;
-  width: 80%;
-  height: 60vh;
+  margin: 5% auto;
+  width: 70%;
+}
+.el-tabs__active-bar {
+  background-color: #ffd04b;
+}
+.el-tabs__item {
+  color: #fff;
+}
+.el-tabs__item:hover {
+  color: #ffd04b;
+}
+.el-tabs__item.is-active {
+  color: #ffd04b;
+}
+.res-item {
+  float: left;
+  width: 120px;
+  height: 150px;
+  margin-left: 80px;
+  margin-top: 30px;
+  color: #fff;
+}
+.res-item:hover {
+  color: #ffd04b;
+}
+.el-image {
+  margin: 0 auto;
+  height: 120px;
+  width: 120px;
+}
+h4 {
+  text-align: center;
 }
 </style>

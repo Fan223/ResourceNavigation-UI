@@ -78,7 +78,7 @@ import { getCurrentInstance, inject } from '@vue/runtime-core'
 import ViewUIPlus from 'view-ui-plus';
 
 export default {
-  name: 'UserAdd',
+  name: 'ResourceAdd',
   props: ['dialog'],
   setup(props, context) {
     const axios = inject('axios')
@@ -107,7 +107,7 @@ export default {
                 type: 'success'
               })
 
-              context.emit('pageUsers')
+              context.emit('listUsers')
             } else {
               ViewUIPlus.LoadingBar.error()
               ElMessage({

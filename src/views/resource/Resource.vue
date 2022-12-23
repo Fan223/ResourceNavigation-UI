@@ -6,39 +6,48 @@
         class="query-form-inline"
         label-position="right"
         label-width="70px"
-        :model="loginInfoQueryForm"
-        ref="loginInfoQueryFormRef"
+        :model="resourceQueryForm"
+        ref="resourceQueryFormRef"
         :inline="true"
-        @keyup.enter="pageLoginInfos"
+        @keyup.enter="listresources"
       >
         <el-form-item
           label="用户名"
           prop="username"
         >
           <el-input
-            v-model="loginInfoQueryForm.username"
+            v-model="resourceQueryForm.username"
             placeholder="请输入用户名"
             clearable
           />
         </el-form-item>
         <el-form-item
-          label="IP地址"
-          prop="ipAddress"
+          label="状态"
+          prop="flag"
         >
-          <el-input
-            v-model="loginInfoQueryForm.ipAddress"
-            placeholder="请输入IP地址"
+          <el-select
+            v-model="resourceQueryForm.flag"
+            placeholder="请选择状态"
             clearable
-          />
+          >
+            <el-option
+              label="正常"
+              value="Y"
+            />
+            <el-option
+              label="禁用"
+              value="N"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item class="query-form-inline-button">
           <el-button
             size="small"
             type="primary"
-            @click="pageLoginInfos"
+            @click="listresources"
           >查询
           </el-button>
-          <el-button @click="() => this.$refs.loginInfoQueryFormRef.resetFields()">重置
+          <el-button @click="() => this.$refs.resourceQueryFormRef.resetFields()">重置
           </el-button>
         </el-form-item>
       </el-form>
@@ -56,8 +65,14 @@
       </el-col>
       <el-col :span="18">
         <div class="data-content-header-button">
+          <el-button
+            v-if="hasAuth('user:add')"
+            type="primary"
+            size="small"
+            @click="dialog.addDialogVisible = true"
+          >新增</el-button>
           <el-popconfirm
-            v-if="hasAuth('loginInfo:delete')"
+            v-if="hasAuth('user:delete')"
             confirm-button-text="确定"
             cancel-button-text="取消"
             title="确定删除吗?"
@@ -80,7 +95,7 @@
     <el-row>
       <el-col :span="23">
         <el-table
-          :data="loginInfos.data"
+          :data="resources.data"
           row-key="id"
           border
           stripe
@@ -95,71 +110,71 @@
             label="用户名"
             sortable
             align="center"
-            min-width="100px"
-          />
-          <el-table-column
-            prop="operateSystem"
-            label="操作系统"
-            sortable
-            align="center"
             min-width="120px"
           />
           <el-table-column
-            prop="browser"
-            label="浏览器"
+            prop="roleNames"
+            label="角色"
             sortable
             align="center"
-            min-width="100px"
-          />
+            min-width="180px"
+          >
+            <template #default="scope">
+              <el-tag
+                v-for="roleName in scope.row.roleNames"
+                :key="roleName"
+                size="small"
+                type="info"
+              >
+                {{ roleName }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="ipAddress"
-            label="IP地址"
+            prop="avatar"
+            label="头像"
             align="center"
             sortable
-            min-width="140px"
           />
           <el-table-column
-            prop="countryZhCnName"
-            label="国家"
+            prop="flag"
+            label="状态"
             align="center"
-          />
+          >
+            <template #default="scope">
+              <el-tag
+                v-if="scope.row.flag === 'N'"
+                size="small"
+                type="danger"
+              >禁用</el-tag>
+              <el-tag
+                v-else-if="scope.row.flag === 'Y'"
+                size="small"
+                type="success"
+              >正常</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column
-            prop="subdivisionZhCnName"
-            label="省份"
-            align="center"
-          />
-          <el-table-column
-            prop="cityZhCnName"
-            label="城市"
-            align="center"
-          />
-          <el-table-column
-            prop="latitude"
-            label="纬度"
-            align="center"
-            min-width="100px"
-          />
-          <el-table-column
-            prop="longitude"
-            label="经度"
-            align="center"
-            min-width="100px"
-          />
-          <el-table-column
-            prop="updateTime"
-            label="最近登录时间"
+            prop="createTime"
+            label="创建时间"
             sortable
             align="center"
             min-width="180px"
           />
           <el-table-column
-            v-if="hasAuth('loginInfo:delete')"
+            v-if="hasAuth('user:update') || hasAuth('user:delete')"
             label="操作"
             align="center"
-            min-width="80px"
+            min-width="240px"
             fixed="right"
           >
             <template #default="scope">
+              <el-button
+                v-if="hasAuth('user:update')"
+                type="primary"
+                size="small"
+                @click="updateUser(scope.row)"
+              >编辑</el-button>
               <el-popconfirm
                 confirm-button-text="确定"
                 cancel-button-text="取消"
@@ -170,7 +185,7 @@
               >
                 <template #reference>
                   <el-button
-                    v-if="hasAuth('loginInfo:delete')"
+                    v-if="hasAuth('user:delete')"
                     type="danger"
                     size="small"
                   >删除</el-button>
@@ -188,6 +203,15 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="paginationForm.total"
         />
+        <UserAdd
+          :dialog="dialog"
+          @pageResources="pageResources"
+        />
+        <UserEdit
+          :dialog="dialog"
+          @pageResources="pageResources"
+          :userUpdateRow="userUpdateRow.data"
+        />
       </el-col>
     </el-row>
   </div>
@@ -198,34 +222,47 @@ import { reactive, ref } from '@vue/reactivity'
 import { getCurrentInstance, inject, watch } from '@vue/runtime-core'
 import { InfoFilled } from '@element-plus/icons-vue'
 import ViewUIPlus from 'view-ui-plus';
+import UserAdd from './ResourceAdd.vue';
+import UserEdit from './ResourceEdit.vue';
 import '@/assets/css/mainStyle.css'
 
 export default {
-  name: 'LoginInfo',
+  // eslint-disable-next-line vue/multi-word-component-names
+  name: 'Resource',
   setup() {
     const axios = inject('axios')
     const { proxy } = getCurrentInstance()
     const ElMessage = inject('ElMessage')
 
-    let loginInfoQueryForm = reactive({
+    let resourceQueryForm = reactive({
     })
     let paginationForm = reactive({
       currentPage: 1,
       pageSize: 10,
     })
-    let loginInfos = reactive({
+    let resources = reactive({
       data: []
+    })
+    let dialog = reactive({
+      addDialogVisible: false,
+      editDialogVisible: false,
+    })
+    let userUpdateRow = reactive({
+      data: {}
     })
     let tableMaxHeight = ref(window.innerHeight - 310)
 
 
-    function pageLoginInfos() {
+    function pageResources() {
+      dialog.addDialogVisible = false
+      dialog.editDialogVisible = false
+      dialog.assignDialogVisible = false
       ViewUIPlus.LoadingBar.start();
 
-      axios.get('/resNav/loginInfo/pageLoginInfos', {
+      axios.get('/resNav/user/pageResources', {
         params: {
-          username: loginInfoQueryForm.username,
-          ipAddress: loginInfoQueryForm.ipAddress,
+          flag: resourceQueryForm.flag,
+          username: resourceQueryForm.username,
           currentPage: paginationForm.currentPage,
           pageSize: paginationForm.pageSize
         }
@@ -233,8 +270,8 @@ export default {
         if (response.data.code === 200) {
           ViewUIPlus.LoadingBar.finish();
 
-          loginInfos.data = []
-          loginInfos.data.push.apply(loginInfos.data, response.data.data.records)
+          resources.data = []
+          resources.data.push.apply(resources.data, response.data.data.records)
           paginationForm.total = response.data.data.total
         } else {
           ViewUIPlus.LoadingBar.error();
@@ -245,10 +282,10 @@ export default {
         }
       })
     }
-    pageLoginInfos();
+    pageResources();
 
     watch([() => paginationForm.currentPage, () => paginationForm.pageSize], () => {
-      pageLoginInfos()
+      pageResources()
     })
 
     function deleteUser(row) {
@@ -263,7 +300,7 @@ export default {
             type: 'success'
           })
 
-          pageLoginInfos()
+          pageResources()
           proxy.refreshNavMenus()
         } else {
           ViewUIPlus.LoadingBar.error();
@@ -288,18 +325,30 @@ export default {
       }
     }
 
+    function updateUser(row) {
+      dialog.editDialogVisible = true
+      userUpdateRow.data = row
+    }
+
     return {
-      loginInfoQueryForm,
+      resourceQueryForm,
       paginationForm,
-      loginInfos,
+      resources,
+      userUpdateRow,
+      dialog,
       InfoFilled,
       tableMaxHeight,
 
       deleteUser,
       multipleDeleteUser,
-      pageLoginInfos,
+      updateUser,
+      pageResources,
     }
   },
+  components: {
+    UserAdd,
+    UserEdit
+  }
 }
 </script>
 

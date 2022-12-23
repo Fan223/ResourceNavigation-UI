@@ -158,7 +158,7 @@ export default {
 
 <style scoped>
 .el-col {
-  background-image: url("@/assets/image/3.jpg");
+  background-image: url("@/assets/images/background.jpg");
   background-size: 100% 100%;
   height: 100vh;
   min-height: 521px;

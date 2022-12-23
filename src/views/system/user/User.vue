@@ -9,7 +9,7 @@
         :model="userQueryForm"
         ref="userQueryFormRef"
         :inline="true"
-        @keyup.enter="listUsers"
+        @keyup.enter="pageUsers"
       >
         <el-form-item
           label="用户名"
@@ -44,7 +44,7 @@
           <el-button
             size="small"
             type="primary"
-            @click="listUsers"
+            @click="pageUsers"
           >查询
           </el-button>
           <el-button @click="() => this.$refs.userQueryFormRef.resetFields()">重置
@@ -211,18 +211,18 @@
         />
         <UserAdd
           :dialog="dialog"
-          @listUsers="listUsers"
+          @pageUsers="pageUsers"
         />
         <UserEdit
           :dialog="dialog"
-          @listUsers="listUsers"
+          @pageUsers="pageUsers"
           :userUpdateRow="userUpdateRow.data"
         />
         <AssignRole
           :dialog="dialog"
           :userId="assignRole.id"
           :roleIds="assignRole.roleIds"
-          @listUsers="listUsers"
+          @pageUsers="pageUsers"
         />
       </el-col>
     </el-row>
@@ -271,7 +271,7 @@ export default {
     let tableMaxHeight = ref(window.innerHeight - 310)
 
 
-    function listUsers() {
+    function pageUsers() {
       dialog.addDialogVisible = false
       dialog.editDialogVisible = false
       dialog.assignDialogVisible = false
@@ -300,10 +300,10 @@ export default {
         }
       })
     }
-    listUsers();
+    pageUsers();
 
     watch([() => paginationForm.currentPage, () => paginationForm.pageSize], () => {
-      listUsers()
+      pageUsers()
     })
 
     function deleteUser(row) {
@@ -318,7 +318,7 @@ export default {
             type: 'success'
           })
 
-          listUsers()
+          pageUsers()
           proxy.refreshNavMenus()
         } else {
           ViewUIPlus.LoadingBar.error();
@@ -367,7 +367,7 @@ export default {
       deleteUser,
       multipleDeleteUser,
       updateUser,
-      listUsers,
+      pageUsers,
       assignRoles,
     }
   },
